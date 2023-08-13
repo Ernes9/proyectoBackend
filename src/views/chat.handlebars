@@ -1,0 +1,53 @@
+
+
+<div class="container-fluid vh-100 d-flex flex-column justify-content-center" id="login-container">
+    <h1>Join Chat</h1>
+    <div class="input">
+        <label for="username">Username</label>
+        <input type="text" id="usernameInput" placeholder="Enter your username...">
+    </div>
+    <div class="buttonContainer">
+        <button type="button" class="btn btn-primary" id="loginButton">Login</button>
+    </div>
+</div>
+
+<div class="container-fluid p-2 hidden" id="messages-container">
+  <div class="d-flex justify-content-between flex-column" style="height: 100vh;">
+    <div class="d-flex align-items-center justify-content-between py-3 border-bottom border-2 border-gray-200">
+      <div class="d-flex align-items-center">
+        <div class="d-relative"></div>
+        <div class="d-flex flex-column">
+          <div class="d-flex align-items-center">
+            <span class="chat-color mr-3">CHAT_NAME</span>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex align-items-center space-2"></div>
+    </div>
+    <div id="messages" class="d-flex flex-column space-4 p-3 overflow-auto" style="scrollbar-width: thin;">
+      
+    </div>
+    <div class="border-top border-2 border-gray-200 px-4 pt-3 pb-2 mb-2 d-flex flex-column">
+  <div class="input-group">
+    <input type="text" placeholder="Write your message!" class="form-control focus-outline-none focus-placeholder-gray-400 text-black placeholder-gray-300 bg-zinc-700 rounded py-2" id="message" />
+    <div class="input-group-append">
+      <button type="button" class="btn btn-primary rounded-right py-2" id="sendMsg">
+        <span class="font-weight-bold">Send</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-6 w-6 ml-2" style="transform: rotate(90deg);">
+          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/chat.js"></script>
+
+<style>
+    .hidden{
+        display: none !important;
+    }
+</style>
