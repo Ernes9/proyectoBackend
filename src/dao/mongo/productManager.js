@@ -8,7 +8,8 @@ class ProductManager{
     async getProducts(){
         try{
             const products = await ProductModel.find()
-            return products;
+            this.products = products
+            return this.products;
         } catch {
             return [];
         }

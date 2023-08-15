@@ -53,4 +53,45 @@ cartRouter.post("/:cid/product/:pid", async (req, res) => {
     }
 })
 
+cartRouter.delete('/:cid/product/:pid', async (req, res) => {
+    try{
+        const products = req.body;
+        const result = await cartManager.addCart(products)
+        res.send(result)
+    }catch(e){
+        res.status(502).send({ error: true });   
+        }
+    })
+
+cartRouter.delete('/:cid', async (req, res) => {
+    try{
+        const cid = req.params.cid;
+        await cartManager.emptyCart(cid)
+        res.json({deleted: true})
+    } catch (e){
+        res.status(502).send({error: true})
+    }
+})
+
+cartRouter.put("/:cid", async (req, res) => {
+    const cid = req.params.cid;
+    const prod = req.body;
+    const updatedCart = await cartManager.updateCart(cid, prod);
+    res.send(updatedCart);
+});
+
+cartRouter.put("/:cid/product/:pid", async (req, res) => {
+    const cid = req.params.cid;
+    const pid = req.params.pid;
+    const quantity = req.body.quantity;
+    const updatedQuantity = await cartManager.updateQuantity(
+        cid,
+        pid,
+        quantity
+    );
+    res.send(updatedQuantity);
+});
+
+
+
 export default cartRouter;

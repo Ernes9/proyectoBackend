@@ -4,8 +4,8 @@ import productManager from "../dao/mongo/productManager.js";
 const productsApiRouter = Router();
 
 productsApiRouter.get('/', async (req, res) => {
-    let { limit } = req.query;
     try {
+        const { limit } = req.query;
         const productos = await productManager.getProducts();
         if (productos.length == 0) {
             res.status(404).json({ error: 'No se encontraron productos' });

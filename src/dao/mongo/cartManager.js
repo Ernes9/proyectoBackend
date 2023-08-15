@@ -53,6 +53,67 @@ class CartManager{
             console.log(e);
         }
     }
+    async updateCart(cid, prod) {
+        try {
+            const updatedCart = await CartModel.findOneAndUpdate(
+                { _id: cid },
+                { products: prod }
+            );
+            console.log("Carrito actualizado", updatedCart);
+            return updatedCart;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    async updateQuantity(cid, pid, quantity) {
+        try {
+            const currentCart = await CartModel.findOne({_id: cid});
+            const indexProduct = currentCart.products.findIndex((item) => item.product._id == pid);
+            console.log(indexProduct)
+            if (indexProduct !== -1) {
+              currentCart.products[indexProduct].quantity = quantity;
+              console.log(`Cantidad actualizada`)
+              
+            } else {
+              return 'Product not found'
+            }
+            await currentCart.save()
+            return currentCart;
+            
+          } catch (error) {
+            console.error(`Error: ${error}`);
+          }
+    };
+
+    async deleteProd(cid, pid) {
+        try {
+            let cart = await CartModel.findById(cid);
+            const prodIndex = cart.products.findIndex(
+                (prod) => prod.product == pid
+            );
+            if (cart.products[prodIndex].quantity > 1) {
+                cart.products[prodIndex].quantity--;
+            } else {
+                cart = await CartModel.findOneAndUpdate({ _id: cid }, { $pull: { products: { product: pid } } }, { 'new': true });
+            }
+            await cart.save();
+            return cart;
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async emptyCart(cid) {
+        try {
+            const cart = await CartModel.findById(cid);
+            cart.products = [];
+            await cart.save();
+            return cart;
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
 }
 
 const cartManager = new CartManager()

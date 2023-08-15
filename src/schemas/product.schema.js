@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2"
 
 /* const product = {
                 id: randomUUID(),
@@ -41,6 +42,8 @@ const productSchema = new mongoose.Schema({
         required: true
     }
 });
+
+productSchema.plugin(mongoosePaginate)
 
 const ProductModel = mongoose.model("products", productSchema);
 export default ProductModel;

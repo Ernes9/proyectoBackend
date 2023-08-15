@@ -1,10 +1,19 @@
 <div>
     <h1>PRODUCTS</h1>
-    {{#each prods}}
-        <ul>
-            <li><b>Title: </b>{{this.title}}</li>
-            <li><b>Description: </b>{{this.description}}</li>
-            <li><b>Price: </b>{{this.price}}</li>
-        </ul>
-    {{/each}}
+    <div class="productos d-flex">
+
+        {{#each prods}}
+            <div class="prod-container">
+                <ul>
+                    <li><b>Title: </b>{{this.title}}</li>
+                    <li><b>Description: </b>{{this.description}}</li>
+                    <li><b>Price: </b>{{this.price}}</li>
+                </ul>
+                <button class="botonAgregar" data-id={{this._id}}>Agregar al carrito</button>
+            </div>
+        {{/each}}
+
+    </div>
 </div>
+
+<script src="/js/products.js"></script>
