@@ -1,6 +1,4 @@
-import { randomUUID } from "crypto";
 import CartModel from "../../schemas/cart.schema.js"
-import ProductModel from "../../schemas/product.schema.js";
 
 class CartManager{
     constructor(){}
@@ -17,42 +15,52 @@ class CartManager{
 
     async addCart() {
         try{
-            const cart = await CartModel.create();
-            return cart._id;
+            const cart = await CartModel.create({products: []});
+            return cart;
         } catch(e) {
             console.log(e);
         }
     }
 
     async getCartById(id){
-        const foundCart = await CartModel.findOne({_id: id})
+        const foundCart = await CartModel.findById(id)
+        .populate('products.product')
+        .lean();
+        
         if (foundCart){
+          console.log(foundCart)
             return foundCart;
         } else{
             console.log('Not Found');
         };
     };
 
-    async addProductInCart(cartId, prodId) {
+    async addProductInCart(cidCart, productById) {
         try {
-            const foundProduct = await ProductModel.findOne({_id: prodId});
-            if (!foundProduct){
-                console.log("El producto no existe")
-                return;
-            } else {
-                const productIndex = await ProductModel.findOne({_id: prodId}, {_id: 1})
-                if (productIndex !== -1) {
-                    const productToUpdate = `products.${productIndex}.quantity`;
-                    await CartModel.findOneAndUpdate({ _id: cartId }, { $inc: { [productToUpdate]: 1 } });
-                } else {
-                    await CartModel.findOneAndUpdate({ _id: cartId }, { $push: { products: { id: prodId, quantity: 1 } } });
-                }
-                return;
-            }
+          const filter = { _id: cidCart, "products._id": productById._id };
+          const cart = await CartModel.findById(cidCart).lean();
+          if (
+            cart.products.find(
+              (p) => p._id.toString() == productById._id.toString()
+            )
+          ) {
+            const update = {
+              $inc: { "products.$.quantity": 1 },
+            };
+            await CartModel.findOneAndUpdate(filter, update);
+          } else {
+            const update2 = {
+              $push: {
+                products: { _id: productById._id, quantity: productById.quantity },
+              },
+            };
+            await CartModel.findOneAndUpdate({ _id: cidCart }, update2);
+          }
+          return await CartModel.findById(cidCart);
         } catch (e) {
-            console.log(e);
+          console.log(e);
         }
-    }
+      }
     async updateCart(cid, prod) {
         try {
             const updatedCart = await CartModel.findOneAndUpdate(
@@ -67,47 +75,52 @@ class CartManager{
     }
     async updateQuantity(cid, pid, quantity) {
         try {
-            const currentCart = await CartModel.findOne({_id: cid});
-            const indexProduct = currentCart.products.findIndex((item) => item.product._id == pid);
-            console.log(indexProduct)
-            if (indexProduct !== -1) {
-              currentCart.products[indexProduct].quantity = quantity;
-              console.log(`Cantidad actualizada`)
-              
-            } else {
-              return 'Product not found'
-            }
-            await currentCart.save()
-            return currentCart;
-            
-          } catch (error) {
-            console.error(`Error: ${error}`);
+          console.log(quantity);
+          const filter = { _id: cid, "products._id": pid };
+          const cart = await CartModel.findById(cid).lean();
+          if (cart.products.find((p) => p._id.toString() == pid)) {
+            const update = {
+              $set: { "products.$.quantity": quantity },
+            };
+            await CartModel.findOneAndUpdate(filter, update);
           }
-    };
+    
+          return await CartModel.findById(cid);
+        } catch (error) {
+          console.error(`Error: ${error}`);
+        }
+    }
 
     async deleteProd(cid, pid) {
         try {
-            let cart = await CartModel.findById(cid);
-            const prodIndex = cart.products.findIndex(
-                (prod) => prod.product == pid
-            );
-            if (cart.products[prodIndex].quantity > 1) {
-                cart.products[prodIndex].quantity--;
-            } else {
-                cart = await CartModel.findOneAndUpdate({ _id: cid }, { $pull: { products: { product: pid } } }, { 'new': true });
-            }
-            await cart.save();
-            return cart;
+          let cart = await CartModel.findById(cid).lean();
+          const filter = { _id: cid, "products._id": pid };
+          if (cart.products.find((p) => p.quantity > 0)) {
+            const dec = {
+              $inc: { "products.$.quantity": -1 },
+            };
+            cart = await CartModel.findOneAndUpdate(filter, dec);
+          } else {
+            const erase = {
+              $pull: { products: { _id: pid } },
+            };
+            cart = await CartModel.findOneAndUpdate(filter, erase, {
+              new: true,
+            });
+          }
+    
+          return cart;
         } catch (error) {
-            console.log(error)
+          console.log(error);
         }
-    }
+      }
+    
 
     async emptyCart(cid) {
         try {
             const cart = await CartModel.findById(cid);
             cart.products = [];
-            await cart.save();
+            cart.save();
             return cart;
         } catch (err) {
             console.error(err);

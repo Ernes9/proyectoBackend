@@ -7,19 +7,35 @@ const cartRouter = Router();
 cartRouter.post("/", async (req, res) => {
     try {
         const result = await cartManager.addCart();
-        res.json({message: "carrito agregado"});
+        res.json({message: "carrito agregado", cart: result});
     } catch(e) {
         console.log(e);
         res.status(403).json({error: true})
     }
 })
 
+cartRouter.get("/", async (req, res) => {
+    try {
+      const carts = await cartManager.getCarts();
+      if (carts) {
+        res.json(carts);
+      } else {
+        res.status(404).json({ error: "No se encontraron carritos" });
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(403).json({ error: true });
+    }
+  });
+
 cartRouter.get("/:id", async (req, res) => {
     try{
         const {id} = req.params;
         const cartById = await cartManager.getCartById(id)
+        const products = cartById.products;
         if (cartById){
-            res.json(cartById)
+            console.log(products)
+            res.render('cart', {prods: products, id})
         }
         else{
             res.status(404).json({error: "No se encontró un carrito con ese ID"})
@@ -44,8 +60,8 @@ cartRouter.post("/:cid/product/:pid", async (req, res) => {
         else if (!foundProduct){
             res.status(404).json({error: true, message: "producto no encontrado!"})
         } else {
-            const result = await cartManager.addProductInCart(cid, pid)
-            res.json({message: "producto añadido"})
+            const result = await cartManager.addProductInCart(cid, foundProduct)
+            res.json({message: "producto añadido", result: result})
         }
     } catch (e) {
         console.log(e);
@@ -54,14 +70,14 @@ cartRouter.post("/:cid/product/:pid", async (req, res) => {
 })
 
 cartRouter.delete('/:cid/product/:pid', async (req, res) => {
-    try{
-        const products = req.body;
-        const result = await cartManager.addCart(products)
-        res.send(result)
-    }catch(e){
-        res.status(502).send({ error: true });   
-        }
-    })
+    try {
+        const { cid, pid } = req.params;
+        const result = await cartManager.deleteProd(cid, pid);
+        res.send(result);
+      } catch (e) {
+        res.status(502).send({ error: true });
+      }
+    });
 
 cartRouter.delete('/:cid', async (req, res) => {
     try{

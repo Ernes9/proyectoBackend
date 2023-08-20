@@ -7,8 +7,8 @@ class ProductManager{
 
     async getProducts(){
         try{
-            const products = await ProductModel.find()
-            this.products = products
+            const products = await ProductModel.find();
+            this.products = products;
             return this.products;
         } catch {
             return [];
@@ -16,7 +16,7 @@ class ProductManager{
     };
 
     async getProductById(id){
-        const foundProduct = await ProductModel.findOne({_id: id})
+        const foundProduct = await ProductModel.findById(id).lean()
         if (foundProduct){
             return foundProduct;
         } else{
@@ -40,7 +40,7 @@ class ProductManager{
 
     async updateProduct({id, updatedFields}) {
         try{
-            await ProductModel.updateOne({_id: id}, {$set:{updatedFields}})
+            await ProductModel.findByIdAndUpdate(id, updatedFields)
         } catch (e) {
             console.log(e)
         }

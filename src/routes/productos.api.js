@@ -67,11 +67,11 @@ productsApiRouter.delete("/:id", async (req, res) => {
 })
 
 productsApiRouter.put("/:id", async (req, res) => {
-    const {_id} = req.body._id;
-    const {updatedFields} = req.body.updatedFields;
+    const {id} = req.params;
+    const {updatedFields} = req.body;
     try {
-        const result = await productManager.updateProduct({_id, updatedFields});
-        res.json(result);
+        const result = await productManager.updateProduct({id, updatedFields});
+        res.send(result);
         req.io.emit("renderProductos", result)
     } catch(e) {
         console.log(e);

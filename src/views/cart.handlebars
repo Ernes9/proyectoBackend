@@ -1,0 +1,17 @@
+<div class="container">
+    <h1 class="my-4 py-3">Carrito {{id}}</h1>
+    <div class="row">
+        {{#each prods}}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{this.product.title}}</h5>
+                    <p class="card-text">Precio: ${{this.product.price}}</p>
+                    <p class="card-text">Categoría: {{this.product.category}}</p>
+                    <p class="card-text">Cantidad: {{this.quantity}}</p>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>
