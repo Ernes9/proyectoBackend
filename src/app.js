@@ -16,6 +16,8 @@ import cookieParser from "cookie-parser";
 import FileStore from "session-file-store";
 import MongoStore from "connect-mongo";
 import crypto from "crypto"
+import authRouter from "./routes/auth.js";
+import InitLocalStrategy from "./config/passport.config.js";
 
 
 const conn = await mongoose.connect('mongodb+srv://ecommerce:VtSDF3xVOpBLehR2@ecommerce.upmp7t0.mongodb.net/ecommerce')
@@ -32,6 +34,7 @@ app.engine("handlebars", handlebars.engine());
 app.set("views", "./views");
 app.set("view engine", "handlebars");
 
+InitLocalStrategy()
 
 // Nos transforma la informacion que venga de los query params para poder utilizarla como objeto
 app.use(express.urlencoded({extended: true}));
@@ -55,6 +58,7 @@ app.use(session({
 
 app.use("/api/productos", productsApiRouter)
 app.use("/api/cart", cartRouter)
+app.use("/api/auth", authRouter)
 app.use("/productos", productsRouter)
 app.use("/realtimeproducts", realTimeProductsRouter)
 app.use("/chat", chatRouter)

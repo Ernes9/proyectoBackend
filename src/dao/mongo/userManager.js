@@ -24,6 +24,15 @@ class UserManager{
         }; 
     }
 
+    async getUsuarioByUsername(username) {
+        try{
+            const user = await UserModel.findOne({ username });
+            return user;
+        } catch (e){
+            console.log(e);
+        }; 
+    }
+
     async createUser(first_name, last_name, username, email, password){
         try {
             const emailExists = await UserModel.find({email})
