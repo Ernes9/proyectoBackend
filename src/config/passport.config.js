@@ -18,10 +18,10 @@ const InitLocalStrategy = () => {
           if (user) return done(null, user);
   
           const userCreate = await userManager.createUser({
-            first_name: profile._json.name.split(" ")[0],
-            last_name: profile._json.name.split(" ")[1],
+            first_name: profile._json.name?.split(" ")[0] ?? "",
+            last_name: profile._json.name?.split(" ")[1] ?? "",
             username,
-            email: profile._json.email,
+            email: profile._json.email ?? "",
             password: "",
             role:
               profile._json.email == "admincoder@coder.com" ? "admin" : "user",

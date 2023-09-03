@@ -33,8 +33,9 @@ class UserManager{
         }; 
     }
 
-    async createUser(first_name, last_name, username, email, password){
+    async createUser(user){
         try {
+            let { first_name, last_name, username, email, password } = user;
             const emailExists = await UserModel.find({email})
             if (emailExists.length) return "El mail ya existe"
             const salt = await bcrypt.genSalt(10);
