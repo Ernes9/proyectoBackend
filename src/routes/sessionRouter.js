@@ -1,18 +1,25 @@
 import { Router } from "express";
 import userManager from "../dao/mongo/userManager.js";
 import { isAuthenticated, isLogged } from "../utils/auth.middleware.js";
+import { generateToken, JWTCookieMW} from "../utils/jwt.js";
+
 
 const sessionRouter = Router()
 
-sessionRouter.get("/login", isLogged, (req, res) => {
+sessionRouter.get("/login", JWTCookieMW, (req, res) => {
     res.render("login")
 })
 
-sessionRouter.post("/login", isLogged, async (req, res) => {
+sessionRouter.post("/login", JWTCookieMW, async (req, res) => {
     try {
         const {email, password} = req.body;
         const user = await userManager.validateUser(email, password) || email == "adminCoder@coder.com";
         if (!user) res.status(401).json({ message: 'Credenciales inválidas.' });
+        const token = generateToken({sub: user._id, user: {email}})
+        res.cookie("accessToken", token, {
+            maxAge: (24*60*60)*1000,
+            httpOnly: true
+        })
         const userSession = {
             _id: user._id,
             first_name: user.first_name,
@@ -27,6 +34,11 @@ sessionRouter.post("/login", isLogged, async (req, res) => {
         res.status(500).json({ message: 'Error en el servidor '})
     }
 });
+
+
+sessionRouter.get("/current", JWTCookieMW, (req, res) => {
+    
+})
 
 sessionRouter.get("/register", (req, res) => {
     res.render("register")

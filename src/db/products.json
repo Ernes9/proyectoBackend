@@ -1,1 +1,39 @@
-[{"id":1,"title":"Telefono","description":"MacBook Air","price":2500,"thumbnail":"imagen.png","code":"uTn572","stock":7},{"id":2,"title":"telefono","description":"iPhone 11","price":1100,"thumbnail":"imagen.png","code":"hwASdwa62","stock":21},{"id":3,"title":"telefono","description":"iPhone 12","price":1100,"thumbnail":"imagen.png","code":"hwASwaddwa62","stock":21},{"id":"67365820-fa51-493b-bc08-662aca9c6cf5","title":"Notebook","description":"Acer Aspire 5","price":999,"status":true,"thumbnail":"acer.png","code":"n27","stock":99}]
+[
+  {
+    "id": 1,
+    "title": "Telefono",
+    "description": "MacBook Air",
+    "price": 2500,
+    "thumbnail": "imagen.png",
+    "code": "uTn572",
+    "stock": 7
+  },
+  {
+    "id": 2,
+    "title": "telefono",
+    "description": "iPhone 11",
+    "price": 1100,
+    "thumbnail": "imagen.png",
+    "code": "hwASdwa62",
+    "stock": 21
+  },
+  {
+    "id": 3,
+    "title": "telefono",
+    "description": "iPhone 12",
+    "price": 1100,
+    "thumbnail": "imagen.png",
+    "code": "hwASwaddwa62",
+    "stock": 21
+  },
+  {
+    "id": "67365820-fa51-493b-bc08-662aca9c6cf5",
+    "title": "Notebook",
+    "description": "Acer Aspire 5",
+    "price": 999,
+    "status": true,
+    "thumbnail": "acer.png",
+    "code": "n27",
+    "stock": 99
+  }
+]

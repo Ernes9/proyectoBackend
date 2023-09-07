@@ -1,18 +1,31 @@
 <div class="col-md-6 col-lg-4 p-4 m-4 border rounded shadow">
-    <h2 class="mb-4">Inicio de Sesión</h2>
-    <form method="POST" id="loginForm">
-        <div class="mb-3">
-            <label for="email" class="form-label">Correo electrónico:</label>
-            <input class="form-control" type="email" id="email" name="email" required>
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Contraseña:</label>
-            <input class="form-control" type="password" id="password" name="password" required>
-        </div>
-        <button class="btn btn-primary btn-block mb-3" type="submit">Iniciar Sesión</button>
-    </form>
-    <a href="/api/auth/github" class="btn btn-secondary btn-block mb-3">
-        Acceder con Github
-    </a>
-    <p class="text-center mb-0">¿No tienes una cuenta? <a href="/session/register" class="text-info">Registrarse</a></p>
+  <h2 class="mb-4">Inicio de Sesión</h2>
+  <form method="POST" id="loginForm">
+    <div class="mb-3">
+      <label for="email" class="form-label">Correo electrónico:</label>
+      <input
+        class="form-control"
+        type="email"
+        id="email"
+        name="email"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Contraseña:</label>
+      <input
+        class="form-control"
+        type="password"
+        id="password"
+        name="password"
+        required
+      />
+    </div>
+    <button class="btn btn-primary btn-block mb-3" type="submit">Iniciar Sesión</button>
+  </form>
+  <a href="/api/auth/github" class="btn btn-secondary btn-block mb-3">
+    Acceder con Github
+  </a>
+  <p class="text-center mb-0">¿No tienes una cuenta?
+    <a href="/session/register" class="text-info">Registrarse</a></p>
 </div>
