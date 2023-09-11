@@ -1,6 +1,12 @@
 import passport from "passport";
 import GithubStrategy from "passport-github2"
 import userManager from "../dao/mongo/userManager.js";
+import jwt from 'passport-jwt'
+import { SECRET } from "../utils/jwt.js";
+import cookieExtractor from "../utils/cookieJWT.js";
+
+const JWTStrategy = jwt.Strategy;
+
 
 const InitLocalStrategy = () => {
   
@@ -30,15 +36,24 @@ const InitLocalStrategy = () => {
         }
       )
     );
+
+    passport.use('jwt', new JWTStrategy({
+      jwtFromRequest: jwt.ExtractJwt.fromExtractors([cookieExtractor]),
+      secretOrKey: SECRET,
+    }, async (payload, done) => {
+      const user = await userManager.getUsuarioById(payload.sub)
+      if(!user) return done("Credenciales no válidas!")
+      done(null, user)
+    }))
   
     passport.serializeUser((user, done) => {
       console.log(user);
-      done(null, user.username);
+      done(null, user._id);
     });
   
     passport.deserializeUser(async (id, done) => {
       try {
-        const user = await userManager.getUsuarioByUsername(id);
+        const user = await userManager.getUsuarioById(id);
         done(null, user);
       } catch (e) {
         done(null, false);

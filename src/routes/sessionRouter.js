@@ -1,16 +1,17 @@
 import { Router } from "express";
 import userManager from "../dao/mongo/userManager.js";
-import { isAuthenticated, isLogged } from "../utils/auth.middleware.js";
-import { generateToken, JWTCookieMW} from "../utils/jwt.js";
+import { isAuthenticated } from "../utils/auth.middleware.js";
+import { generateToken} from "../utils/jwt.js";
+import passport from "passport";
 
 
 const sessionRouter = Router()
 
-sessionRouter.get("/login", JWTCookieMW, (req, res) => {
+sessionRouter.get("/login", (req, res) => {
     res.render("login")
 })
 
-sessionRouter.post("/login", JWTCookieMW, async (req, res) => {
+sessionRouter.post("/login", async (req, res) => {
     try {
         const {email, password} = req.body;
         const user = await userManager.validateUser(email, password) || email == "adminCoder@coder.com";
@@ -36,8 +37,8 @@ sessionRouter.post("/login", JWTCookieMW, async (req, res) => {
 });
 
 
-sessionRouter.get("/current", JWTCookieMW, (req, res) => {
-    
+sessionRouter.get("/current", passport.authenticate('jwt', {session: false}), (req, res) => {
+    res.send({user: req.user})
 })
 
 sessionRouter.get("/register", (req, res) => {

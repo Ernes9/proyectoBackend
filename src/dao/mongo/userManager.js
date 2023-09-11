@@ -33,6 +33,15 @@ class UserManager{
         }; 
     }
 
+    async getUsuarioById(id) {
+        try{
+            const user = await UserModel.findOne({ id: _id });
+            return user;
+        } catch (e){
+            console.log(e);
+        }; 
+    }
+
     async createUser(user){
         try {
             let { first_name, last_name, username, email, password } = user;
