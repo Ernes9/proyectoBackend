@@ -4,7 +4,7 @@ import userManager from "../dao/mongo/user.dao.js";
 import jwt from "passport-jwt";
 import { SECRET } from "../utils/jwt.js";
 import cookieExtractor from "../utils/cookieJWT.js";
-import ENV_CONFIG from "./config/config.js";
+import ENV_CONFIG from "./config.js";
 
 const JWTStrategy = jwt.Strategy;
 

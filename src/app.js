@@ -1,8 +1,8 @@
 import express from "express";
 import handlebars from "express-handlebars";
-import productsApiRouter from "./routes/productos.api.js";
-import productsRouter from "./routes/productos.js";
-import cartRouter from "./routes/carts.js";
+import productsApiRouter from "./routes/products.router.js";
+import productsRouter from "./routes/products.views.js";
+import cartRouter from "./routes/carts.router.js";
 import realTimeProductsRouter from "./routes/realTimeProducts.js";
 import sessionRouter from "./routes/user.router.js";
 import { Server as HTTPServer } from "http";
@@ -15,7 +15,7 @@ import cookieParser from "cookie-parser";
 import FileStore from "session-file-store";
 import MongoStore from "connect-mongo";
 import crypto from "crypto";
-import authRouter from "./routes/auth.js";
+import authRouter from "./routes/auth.views.js";
 import InitLocalStrategy from "./config/passport.config.js";
 import ProductDAO from "./dao/mongo/product.dao.js";
 import ENV_CONFIG from './config/config.js'
