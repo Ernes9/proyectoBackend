@@ -39,7 +39,7 @@ sessionRouter.post("/login", async (req, res) => {
   }
 });
 
-sessionRouter.get("/current", passport.authenticate("jwt", { session: false }), UserController);
+sessionRouter.get("/current", passport.authenticate("jwt", { session: false }), UserController.GETCurrentUser);
 
 sessionRouter.get("/register", isLogged, (req, res) => {
   res.render("register");
