@@ -1,4 +1,5 @@
 import passport from "passport";
+import local from "passport-local";
 import GithubStrategy from "passport-github2";
 import userManager from "../dao/mongo/user.dao.js";
 import jwt from "passport-jwt";
@@ -7,6 +8,7 @@ import cookieExtractor from "../utils/cookieJWT.js";
 import ENV_CONFIG from "./config.js";
 
 const JWTStrategy = jwt.Strategy;
+const LocalStrategy = local.Strategy;
 
 const InitLocalStrategy = () => {
   passport.use(
@@ -36,6 +38,17 @@ const InitLocalStrategy = () => {
         done(null, userCreate);
       }
     )
+  );
+
+  passport.use(
+    "local",
+    new LocalStrategy((username, password, done) => {
+      if (username === "adminCoder@coder.com" && password === "adminCod3r123") {
+        return done(null, { username, role: "admin" });
+      } else {
+        return done("No tiene permisos!");
+      }
+    })
   );
 
   passport.use(

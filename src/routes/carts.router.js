@@ -1,5 +1,7 @@
 import { Router } from "express";
 import * as CartController from "../controllers/carts.controller.js";
+import { isUser } from "../utils/auth.middleware.js";
+import passport from "passport";
 const cartRouter = Router();
 
 cartRouter.post("/", CartController.POSTNewCart)
@@ -8,7 +10,9 @@ cartRouter.get("/", CartController.GETAllCarts);
 
 cartRouter.get("/:id", CartController.GETCartById)
 
-cartRouter.post("/:cid/product/:pid", CartController.POSTAddProduct)
+cartRouter.get("/:cid/purchase", passport.authenticate('local'), CartController.POSTPurchase)
+
+cartRouter.post("/:cid/product/:pid", isUser, CartController.POSTAddProduct)
 
 cartRouter.delete('/:cid/product/:pid', CartController.DELETERemoveProduct);
 

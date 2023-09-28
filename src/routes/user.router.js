@@ -1,6 +1,5 @@
 import { Router } from "express";
 import * as UserController from "../controllers/users.controller.js";
-import userManager from "../dao/mongo/user.dao.js";
 import { isAuthenticated, isLogged } from "../utils/auth.middleware.js";
 import { generateToken } from "../utils/jwt.js";
 import passport from "passport";
