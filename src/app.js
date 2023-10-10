@@ -18,11 +18,8 @@ import crypto from "crypto";
 import authRouter from "./routes/auth.views.js";
 import InitLocalStrategy from "./config/passport.config.js";
 import ProductDAO from "./dao/mongo/product.dao.js";
-import ENV_CONFIG from './config/config.js'
-
-const conn = await mongoose.connect(
-    ENV_CONFIG.MONGO_URI
-);
+import mockingRouter from "./routes/mocking.router.js";
+const conn = await mongoose.connect(process.env.MONGO_URI);
 export const messageManager = new messagesManagerDB();
 
 const productDAO = new ProductDAO();
@@ -52,8 +49,7 @@ app.use(cookieParser());
 app.use(
   session({
     store: new MongoStore({
-      mongoUrl:
-        ENV_CONFIG.MONGO_URI,
+      mongoUrl: ENV_CONFIG.MONGO_URI,
       ttl: 30,
     }),
     secret: crypto.randomBytes(64).toString("hex"),
@@ -69,6 +65,7 @@ app.use("/productos", productsRouter);
 app.use("/realtimeproducts", realTimeProductsRouter);
 app.use("/chat", chatRouter);
 app.use("/session", sessionRouter);
+app.use("/mockingproducts", mockingRouter);
 
 httpServer.listen(8080, () => console.log(`Escuchando en el puerto 8080`));
 

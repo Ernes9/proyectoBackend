@@ -1,4 +1,7 @@
 import ProductDAO from "../dao/mongo/product.dao.js"
+import EErrors from "../utils/EError.js";
+import CustomError from "../utils/customError.js";
+import { generateProductErrorInfo } from "../utils/productsError.js";
 
 const productDAO = new ProductDAO();
 
@@ -21,6 +24,14 @@ export const getAllProducts = async ({ limit, page, order, query }) => {
         query,
       });
     }
+    if (!products) {
+      CustomError.createError({
+        message: "CANNOT GET PRODUCTS",
+        cause: generateProductErrorInfo(products),
+        name: "Get products error",
+        code: EErrors.DATABASE_ERROR
+      })
+    }
     const result = {
       error: false,
       msg: "¡Productos encontrados!",
@@ -42,10 +53,12 @@ export const getProductById = async (pid) => {
     const product = await productDAO.findById(pid);
     let result;
     if (!product) {
-      result = {
-        error: false,
-        msg: `El producto con el id: ${pid} no existe`,
-      };
+      CustomError.createError({
+        message: "CANNOT GET PRODUCT",
+        cause: generateProductErrorInfo(product),
+        name: "Get product error",
+        code: EErrors.DATABASE_ERROR
+      })
     } else {
       result = {
         error: false,
