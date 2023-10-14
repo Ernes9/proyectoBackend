@@ -19,6 +19,8 @@ import authRouter from "./routes/auth.views.js";
 import InitLocalStrategy from "./config/passport.config.js";
 import ProductDAO from "./dao/mongo/product.dao.js";
 import mockingRouter from "./routes/mocking.router.js";
+import winston from "./utils/winston.middleware.js"
+
 const conn = await mongoose.connect(process.env.MONGO_URI);
 export const messageManager = new messagesManagerDB();
 
@@ -46,6 +48,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use(cookieParser());
+app.use(winston)
 app.use(
   session({
     store: new MongoStore({
