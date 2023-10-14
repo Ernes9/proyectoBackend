@@ -69,6 +69,7 @@ app.use("/realtimeproducts", realTimeProductsRouter);
 app.use("/chat", chatRouter);
 app.use("/session", sessionRouter);
 app.use("/mockingproducts", mockingRouter);
+app.use('/api/loggers', loggerRouter)
 
 httpServer.listen(8080, () => console.log(`Escuchando en el puerto 8080`));
 
