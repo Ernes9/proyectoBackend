@@ -19,9 +19,12 @@ import authRouter from "./routes/auth.views.js";
 import InitLocalStrategy from "./config/passport.config.js";
 import ProductDAO from "./dao/mongo/product.dao.js";
 import mockingRouter from "./routes/mocking.router.js";
-import winston from "./utils/winston.middleware.js"
+import winston from "./utils/winston.middleware.js";
+import cluster from "cluster";
+import { cpus } from "os";
+import ENV_CONFIG from "./config/config.js"
 
-const conn = await mongoose.connect(process.env.MONGO_URI);
+const conn = await mongoose.connect(ENV_CONFIG.MONGO_URI);
 export const messageManager = new messagesManagerDB();
 
 const productDAO = new ProductDAO();
@@ -70,6 +73,18 @@ app.use("/chat", chatRouter);
 app.use("/session", sessionRouter);
 app.use("/mockingproducts", mockingRouter);
 app.use('/api/loggers', loggerRouter)
+
+const numberOfProcess = cpus().length;
+
+if(cluster.isPrimary){
+  console.log("Primary")
+  for(i=1; i<numberOfProcess; i++){
+    cluster.fork()
+  }
+} else{
+  console.log('worker', process.pid)
+  httpServer.listen(8080, () => console.log(`Escuchando en el puerto 8080`));
+}
 
 httpServer.listen(8080, () => console.log(`Escuchando en el puerto 8080`));
 
