@@ -16,6 +16,7 @@ import FileStore from "session-file-store";
 import MongoStore from "connect-mongo";
 import crypto from "crypto";
 import authRouter from "./routes/auth.views.js";
+import loggerRouter from "./routes/logger.router.js"
 import InitLocalStrategy from "./config/passport.config.js";
 import ProductDAO from "./dao/mongo/product.dao.js";
 import mockingRouter from "./routes/mocking.router.js";
@@ -24,8 +25,14 @@ import cluster from "cluster";
 import { cpus } from "os";
 import ENV_CONFIG from "./config/config.js"
 
+import swaggerJSDoc from "swagger-jsdoc";
+import { serve, setup } from "swagger-ui-express";
+import config from "./utils/swagger.js"
+
 const conn = await mongoose.connect(ENV_CONFIG.MONGO_URI);
 export const messageManager = new messagesManagerDB();
+
+const specs = swaggerJSDoc(config)
 
 const productDAO = new ProductDAO();
 
@@ -64,6 +71,7 @@ app.use(
   })
 );
 
+app.use("/api/docs", serve, setup(specs))
 app.use("/api/productos", productsApiRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/auth", authRouter);
@@ -78,7 +86,7 @@ const numberOfProcess = cpus().length;
 
 if(cluster.isPrimary){
   console.log("Primary")
-  for(i=1; i<numberOfProcess; i++){
+  for(let i=1; i<=numberOfProcess; i++){
     cluster.fork()
   }
 } else{
@@ -86,7 +94,7 @@ if(cluster.isPrimary){
   httpServer.listen(8080, () => console.log(`Escuchando en el puerto 8080`));
 }
 
-httpServer.listen(8080, () => console.log(`Escuchando en el puerto 8080`));
+// httpServer.listen(8080, () => console.log(`Escuchando en el puerto 8080`));
 
 io.on("connection", async (socket) => {
   console.log("Socket conectado!");

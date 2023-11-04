@@ -1,0 +1,231 @@
+paths:
+  /api/productos:
+    get:
+      summary: Devuelve todos los productos
+      tags:
+        - Products
+      responses:
+        "200":
+          description: Devuelve todos los productos
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/product'
+              example:
+                error: false,
+                msg: ¡Productos encontrados!
+                products:
+                  - _id: 60b4b0a9e6c3c2c1b8a7b8a7
+                    title: Producto
+                    description: Descripcion del producto
+                    price: 200
+                    status: True
+                    thumbnail:
+                      - https://picsum.photos/200/300
+                    code: 1
+                    stock: 10
+                  - _id: 60b4b0a9e6c3c2c1b8a7b8a8
+                    title: Producto 2
+                    description: Descripcion del producto 2
+                    price: 299
+                    status: True
+                    thumbnail:
+                      - https://picsum.photos/200/300
+                    code: 2
+                    stock: 18
+        "400":
+          description: Bad request.
+          content:
+            application/json:
+              example:
+                error: error al solicitar productos
+        "502":
+          description: true, hubo un error
+          content:
+            application/json:
+              example:
+                error: true, hubo un error
+    
+    post:
+      summary: Crea un producto en la DB
+      description: Agrega un producto
+      tags:
+        - Products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/product'
+            example:
+              title: Producto
+              description: Descripcion del producto
+              price: 200
+              status: true
+              thumbnail: https://picsum.photos/200/300
+              code: 1
+              stock: 10
+      responses:
+        "200":
+          description: Devuelve el producto creado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+              example:
+                error: false,
+                msg: Producto creado exitosamente
+                info:
+                  _id: 60b4b0a9e6c3c2c1b8a7b8a7
+                  title: Producto
+                  description: Descripcion del producto
+                  price: 200
+                  status: true
+                  thumbnail: https://picsum.photos/200/300
+                  code: 1
+                  stock: 10
+        "400":
+          description: Bad request.
+          content:
+            application/json:
+              example:
+                error: Ha ocurrido un error al intentar crear el producto
+        "502":
+          description: Error en el servidor
+          content:
+            application/json:
+              example:
+                error: error
+
+  /api/productos/:id:
+    put:
+      description: Actualiza producto con ID
+      tags:
+        - Products
+      parameters:
+        - name: productId
+          in: path
+          description: Product ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/product'
+            example:
+              title: Producto editado
+              description: Descripcion del producto editado
+              price: 150
+              status: true
+              thumbnail: https://picsum.photos/200/300
+              code: 2
+              stock: 14
+        responses:
+        "200":
+          description: Devuelve producto actualizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+              example:
+                error: false
+                msg: ¡Producto actualizado!
+                status: update
+                info:
+                  _id: 60b4b0a9e6c3c2c1b8a7b8a7
+                  title: Producto editado
+                  description: Descripcion del producto editado
+                  price: 150
+                  status: Rrue
+                  thumbnail: https://picsum.photos/200/300
+                  code: 2
+                  stock: 14
+        "400":
+          description: Bad request.
+          content:
+            application/json:
+              example:
+                error: error
+        "502":
+          description: error.
+          content:
+            application/json:
+              example:
+                error: error
+
+    delete:
+      description: Borrar el product por ID.
+      tags:
+        - Products
+      parameters:
+        - name: productId
+          in: path
+          description: Product ID
+      responses:
+        "200":
+          description: Devuelve el producto borrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+              example:
+                error: false
+                msg: Producto eliminado por ID
+                status: elimination
+                removedProduct:
+                  _id: 60b4b0a9e6c3c2c1b8a7b8a7
+                  title: Producto eliminado
+                  description: Descripcion del producto eliminado
+                  price: 150
+                  status: true
+                  thumbnail: https://picsum.photos/200/300
+                  code: 2
+                  stock: 14
+        "400":
+          description: Bad request.
+          content:
+            application/json:
+              example:
+                error: error
+        "502":
+          description: error de servidor.
+          content:
+            application/json:
+              example:
+                error: producto no existe
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id: 
+          description: Id autogenerado de Mongo
+          type: string
+        title:
+          description: Nombre del producto
+          type: string
+        description:
+          description: Descripción del producto
+          type: string
+        price:
+          description: Precio del producto
+          type: number
+        status:
+          description: El producto está disponible? True o False
+          type: boolean
+        thumbnail:
+          description: Link a la ruta de la imagen del producto
+          type: string
+        code:
+          description: Código del producto
+          type: string
+        stock:
+          description: Stock del producto
+          type: number
+      required:
+        - title
+        - description
+        - price
+        - status
+        - code
+        - stock
