@@ -193,6 +193,10 @@ paths:
             application/json:
               example:
                 error: producto no existe
+  
+  
+
+
 components:
   schemas:
     Product:
@@ -229,3 +233,40 @@ components:
         - status
         - code
         - stock
+
+    
+
+    User:
+      type: object
+      properties:
+        _id:
+          description: Id autogenerado de Mongo
+          type: string
+        first_name:
+          description: Nombre del usuario
+          type: string
+        last_name:
+          description: Apellido del usuario
+          type: string
+        email:
+          description: Correo electrónico del usuario
+          type: string
+        username:
+          description: Nombre de usuario
+          type: string
+        password:
+          description: Contraseña del usuario
+          type: string
+        cart:
+          description: Carrito del usuario
+          type: object
+        role:
+          description: Rol del usuario
+          type: string
+      required:
+        - first_name
+        - last_name
+        - email
+        - username
+        - password
+        - role

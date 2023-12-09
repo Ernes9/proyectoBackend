@@ -15,7 +15,7 @@ sessionRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user =
-      loginUser(email, password) ||
+      await loginUser(email, password) ||
       email == "adminCoder@coder.com";
     if (!user) res.status(401).json({ message: "Credenciales inválidas." });
     const token = generateToken({ sub: user._id, user: { email } });
@@ -69,6 +69,7 @@ sessionRouter.post("/register", async (req, res) => {
     res.status(200).redirect("../productos");
   } catch (e) {
     console.log(e);
+    res.status(500).json({ message: "Error en el servidor" });
   }
 });
 

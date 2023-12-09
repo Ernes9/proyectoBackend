@@ -29,12 +29,21 @@ import swaggerJSDoc from "swagger-jsdoc";
 import { serve, setup } from "swagger-ui-express";
 import config from "./utils/swagger.js"
 
+// DIRNAME
+// Lo tuve que poner en el app, porque si no me daba error
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+
 const conn = await mongoose.connect(ENV_CONFIG.MONGO_URI);
 export const messageManager = new messagesManagerDB();
 
 const specs = swaggerJSDoc(config)
 
 const productDAO = new ProductDAO();
+
 
 const app = express();
 
@@ -44,7 +53,7 @@ const io = new SocketServer(httpServer);
 const fileStorage = FileStore(session);
 
 app.engine("handlebars", handlebars.engine());
-app.set("views", "./views");
+app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");
 
 InitLocalStrategy();

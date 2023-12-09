@@ -1,7 +1,7 @@
 import passport from "passport";
 import local from "passport-local";
 import GithubStrategy from "passport-github2";
-import userManager from "../dao/mongo/user.dao.js";
+import UserDAO from "../dao/mongo/user.dao.js";
 import jwt from "passport-jwt";
 import { SECRET } from "../utils/jwt.js";
 import cookieExtractor from "../utils/cookieJWT.js";
@@ -10,23 +10,25 @@ import ENV_CONFIG from "./config.js";
 const JWTStrategy = jwt.Strategy;
 const LocalStrategy = local.Strategy;
 
+const userDao = new UserDAO()
+
 const InitLocalStrategy = () => {
   passport.use(
     "github",
     new GithubStrategy(
       {
-        clientID: "df0987077061235b5315",
+        clientID: "Iv1.7d2d60846fbe19d8",
         clientSecret: ENV_CONFIG.GITHUB_KEY,
         callbackURL: "http://localhost:8080/api/auth/callback",
       },
       async (accessToken, refreshToken, profile, done) => {
         console.log(profile);
         const username = profile._json.login;
-        const user = await userManager.getUsuarioByUsername(username);
+        const user = await userDao.findByUsername(username);
 
         if (user) return done(null, user);
 
-        const userCreate = await userManager.createUser({
+        const userCreate = await userDao.create({
           first_name: profile._json.name?.split(" ")[0] ?? "",
           last_name: profile._json.name?.split(" ")[1] ?? "",
           username,
@@ -59,7 +61,7 @@ const InitLocalStrategy = () => {
         secretOrKey: SECRET,
       },
       async (payload, done) => {
-        const user = await userManager.getUsuarioById(payload.sub);
+        const user = await userDao.findById(payload.sub);
         if (!user) return done("Credenciales no válidas!");
         done(null, user);
       }
@@ -73,7 +75,7 @@ const InitLocalStrategy = () => {
 
   passport.deserializeUser(async (id, done) => {
     try {
-      const user = await userManager.getUsuarioById(id);
+      const user = await userDao.findById(id);
       done(null, user);
     } catch (e) {
       done(null, false);

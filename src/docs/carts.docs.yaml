@@ -1,0 +1,241 @@
+paths:
+  /api/cart:
+      get:
+        summary: Devuelve todos los carritos
+        tags:
+          - Carts
+        responses:
+          "200":
+            description: Devuelve todos los carritos
+            content:
+              application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/cart'
+              example:
+                error: false,
+                msg: "¡Carritos encontrados!",
+                info:
+                  _id: 60b4b0a9e6c3c2b4c8a7b8b2
+                  products: [
+                      { id: "1", quantity: 2 },
+                      { id: "2", quantity: 1 }
+                  ]
+                  _id: 60b4b0a9e6c3c2b4c8a7a2c7
+                  products: [
+                      { id: "6", quantity: 6 },
+                      { id: "3", quantity: 4 }
+                  ]
+
+          "400":
+            description: Bad request.
+            content:
+              application/json:
+                example:
+                  error: "Error, no se ha podido encontrar los carritos"
+          "502":
+            description: true,hubo un error
+            content:
+              application/json:
+                example:
+                  error: true,hubo un error
+
+      post:
+        summary: Crea un carrito
+        description: Add cart.
+        tags:
+          - Carts
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cart'
+        responses:
+          "200":
+            description: Devuelve el carrito creado.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/cart'
+                example:
+                  error: false
+                  msg: ¡Carrito creado!
+          "400":
+            description: Bad request.
+            content:
+              application/json:
+                example:
+                  error: Error, no se pudo crear el carrito
+          "502":
+            description: error en el servidor
+            content:
+              application/json:
+                example:
+                  error: error
+
+  /api/cart/{cartId}:
+    get:
+      summary: Devuelve un carrito por id.
+      tags:
+        - Carts
+      parameters:
+        - name: cartId
+          in: path
+          description: Cart ID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/cart'
+              example:
+                error: false
+                msg: ¡Carrito encontrado por ID!
+                info:
+                  _id: 60b4b0a9e6c3c2b4c8a7b8b2
+                  products: [
+                      { id: "1", quantity: 2 },
+                      { id: "2", quantity: 1 }
+                  ]
+        "400":
+          description: Bad request.
+          content:
+            application/json:
+              example:
+                error: true
+                msg: Error, no se ha podido encontrar el carrito solicitado
+        "502":
+          description: true,hubo un error
+          content:
+            application/json:
+              example:
+                error: true,hubo un error al consultar al servidor
+
+  /api/cart/{cartId}/product/{prodId}:
+    post:
+      summary: Crea un producto dentro de un carrito
+      description: Add product in cart
+      tags:
+        - Carts
+      parameters:
+        - name: cartId
+          in: path
+          description: Cart ID
+        - name: prodtId
+          in: path
+          description: Product ID
+      responses:
+        "201":
+          description: Devuelve el carrito con el producto agregado
+          content:
+            application/json:
+              schemas:
+                $ref: "#/componente/schemas/cart"
+              example:
+                error: false
+                msg: ¡Producto agregado al carrito!
+                update:
+                  _id: 60b4b0a9e6c3c2b4c8a7b8b2
+                  products: [
+                      { id: "1", quantity: 2 }
+                      { id: "2", quantity: 1 }
+                  ]
+        "400":
+          description: Bad request.
+          content:
+            application/json:
+              example:
+                error: error
+        "502":
+          description: error de servidor.
+          content:
+            application/json:
+              example:
+                error: true 
+                msg: Error, no se ha podido agregar el producto solicitado al carrito
+
+    delete:
+      summary: Elimina un producto dentro de un carrito
+      description: Delete product in cart
+      tags:
+        - Carts
+      parameters:
+        - name: cartId
+          in: path
+          description: Cart ID
+        - name: prodtId
+          in: path
+          description: Product ID
+      responses:
+        "200":
+          description: Devuelve el carrito actualizado
+          content:
+            application/json:
+              schemas:
+                $ref: "#/componente/schemas/cart"
+              example:
+                error: false
+                msg: Producto removido con éxito
+                update:
+                  _id: 60b4b0a9e6c3c2b4c8a7b8b2
+                  products: [
+                      { id: "1", quantity: 2 }
+                  ]
+        "400":
+          description: Bad request.
+          content:
+            application/json:
+              example:
+                error: error
+        "502":
+          description: error de servidor.
+          content:
+            application/json:
+              example:
+                error: true 
+                msg: Error, no se pudo actualizar la cantidad del producto solicitado
+
+    put:
+      summary: Actualiza la cantidad de un producto dentro de un carrito
+      description: Update product quantity in cart
+      tags:
+        - Carts
+      parameters:
+        - name: cartId
+          in: path
+          description: Cart ID
+        - name: prodtId
+          in: path
+          description: Product ID
+      responses:
+        "200":
+          description: Devuelve el carrito actualizado
+          content:
+            application/json:
+              schemas:
+                $ref: "#/componente/schemas/cart"
+              example:
+                error: false
+                msg: ¡Cantidad del producto actualizada!
+                info:
+                  _id: 60b4b0a9e6c3c2b4c8a7b8b2
+                  products: [
+                      { id: "5", quantity: 11 }
+                  ]
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        _id: 
+          description: Id autogenerado de Mongo
+          type: string
+        products:
+          description: Array de objetos con el _id de un producto y su cantidad en el carrito
+          type: Array
+      required:
+        - products

@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 export const SECRET = "ofn270amf7342hlp0860om8f92hfa";
 
 export const generateToken = (object) =>
-  jw.sign(object, SECRET, { expiresIn: "1hr" });
+  jwt.sign(object, SECRET, { expiresIn: "1hr" });
 
 export const JWTMW = (req, res, next) => {
   const authHeader = req.headers.authorization;
