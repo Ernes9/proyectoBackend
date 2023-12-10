@@ -24,6 +24,7 @@ import winston from "./utils/winston.middleware.js";
 import cluster from "cluster";
 import { cpus } from "os";
 import ENV_CONFIG from "./config/config.js"
+import compression from "express-compression";
 
 import swaggerJSDoc from "swagger-jsdoc";
 import { serve, setup } from "swagger-ui-express";
@@ -79,6 +80,9 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.use(compression({
+  brotli:{enabled:true,zlib:{}}
+}));
 
 app.use("/api/docs", serve, setup(specs))
 app.use("/api/productos", productsApiRouter);

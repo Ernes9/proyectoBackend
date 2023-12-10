@@ -23,6 +23,10 @@ export default class UserDAO {
   async create(user) {
     return await UserModel.insertMany(user);
   }
+  
+  async findByIdAndUpdate(id) {
+    return await UserModel.findByIdAndUpdate(id);
+  }
   //     try {
   //       let { first_name, last_name, username, email, password } = user;
   //       const emailExists = await UserModel.find({ email });

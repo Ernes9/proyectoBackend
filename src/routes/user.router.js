@@ -4,6 +4,10 @@ import { isAuthenticated, isLogged } from "../utils/auth.middleware.js";
 import { generateToken } from "../utils/jwt.js";
 import passport from "passport";
 import { getUserByEmail, loginUser, registerUser } from "../services/users.service.js";
+import UserDAO from "../dao/mongo/user.dao.js";
+import transport from "../utils/mailing.js";
+
+const userDao = new UserDAO()
 
 const sessionRouter = Router();
 
@@ -78,5 +82,62 @@ sessionRouter.get("/logout", isAuthenticated, async (req, res) => {
     res.status(200).redirect("/session/login");
   });
 });
+
+sessionRouter.get("/recoverPassword", async (req, res) => {
+  res.render("recoverPassword")
+})
+
+sessionRouter.post("/recoverPassword", async (req,res) =>{
+  const email = req.body.email
+  const user = await userDao.findByEmail(email)
+  if (!user) {
+    return res.status(404).json({ status: 'error', error: 'User not found' });
+  }
+  try {
+    await transport.sendMail({
+      from: 'kathryne49@ethereal.email',
+      to: email,
+      subject: 'Reset your password',
+      html: `<h1> Reset your password</h1>
+        <hr>Debes resetear tu password haciendo click en el siguiente <a href="http://localhost:8080/sessions/resetPassword/:${email}" target="_blank">LINK</a>
+        <hr>
+        Saludos cordiales,<br>
+        <b>The Coder e-commerce API Backend</b>`
+    })
+    res.json({
+      status: 'success',
+      message: `Email enviado con exito a ${email} para restablecer la contraseña`
+    })
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      error: error.message
+  })
+  }
+})
+
+sessionRouter.get("/resetpassword/:email", async (req, res) => {
+  const email = req.params.email
+  res.render("resetPassword", {email})
+})
+
+sessionRouter.post('/resetpassword/:email', async (req, res) => {
+  try {
+      const email = req.params.email
+      const user = await userDao.findByEmail(email)
+      const newPassword = req.body.newPassword;
+      const passwordsMatch = await bcrypt.compareSync(newPassword, user.password);
+      if (passwordsMatch) {
+          return res.json({ status: 'error', message: 'No puedes usar la misma contraseña' });
+      } 
+      await userDao.findByIdAndUpdate(user._id, { password: createHash(newPassword) })
+      res.render("Contraseña creada exitosamente!")
+  } catch (err) {
+      res.json({
+          status: 'error',
+          message: 'No se ha podido crear la nueva contraseña'
+      })
+  }
+})
 
 export default sessionRouter;
