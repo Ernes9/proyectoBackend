@@ -1,7 +1,7 @@
-import configProd from "../config/loggers/config.prod.js";
+import config from "../config/loggers/factory.js";
 
 export default (error, req, res, next) => {
-  req.logger = configProd;
+  req.logger = config;
   req.logger.FATAL(
     `${req.method} ${req.url} - ${
       error.message

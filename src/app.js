@@ -21,6 +21,7 @@ import InitLocalStrategy from "./config/passport.config.js";
 import ProductDAO from "./dao/mongo/product.dao.js";
 import mockingRouter from "./routes/mocking.router.js";
 import winston from "./utils/winston.middleware.js";
+import winstonErrorMiddleware from "./utils/winstonError.middleware.js";
 import cluster from "cluster";
 import { cpus } from "os";
 import ENV_CONFIG from "./config/config.js"
@@ -96,6 +97,8 @@ app.use("/mockingproducts", mockingRouter);
 app.use('/api/loggers', loggerRouter)
 
 const numberOfProcess = cpus().length;
+
+app.use(winstonErrorMiddleware)
 
 if(cluster.isPrimary){
   console.log("Primary")
