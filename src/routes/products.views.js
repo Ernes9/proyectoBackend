@@ -17,6 +17,7 @@ productsRouter.get("/", async (req, res) => {
         if (productos.length === 0) {
             res.status(404).json({ error: 'No se encontraron productos' });
         } else { 
+            console.log("Sesion:", req.session.user)
             res.render("index", {prods: productos.docs, user: req.session.user})
         }
     } catch(e){

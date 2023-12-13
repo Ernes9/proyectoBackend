@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
 const cartSchema = new mongoose.Schema({
-    products: [
+    products: {
+      type: [
         {
           product: {
             type: mongoose.Types.ObjectId,
@@ -14,6 +15,8 @@ const cartSchema = new mongoose.Schema({
         },
       ],
       default: []
+    }
+      
 });
 
 // cartSchema.pre("find", function () {

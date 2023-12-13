@@ -23,6 +23,7 @@ export const registerUser = async (newUser) => {
     const salt = await bcrypt.genSalt(10);
     newUser.password = await bcrypt.hash(newUser.password, salt);
     const register = await userDAO.create(newUser);
+    console.log("registrado (post en servicio)")
     return register;
   } catch {
     return false;

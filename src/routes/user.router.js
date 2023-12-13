@@ -27,6 +27,7 @@ sessionRouter.post("/login", async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
+    console.log("cookie:", res.cookie)
     const userSession = {
       _id: user._id,
       first_name: user.first_name,
@@ -35,7 +36,8 @@ sessionRouter.post("/login", async (req, res) => {
       role: user.role,
     };
     req.session.user = userSession;
-    res.status(200).redirect("../productos");
+    console.log("Sesion 1", req.session.user)
+    res.status(200).json({ message: "Inicio de sesión exitoso", redirectUrl: "../productos" });
   } catch (e) {
     console.log(e);
     res.status(500).json({ message: "Error en el servidor " });
@@ -58,13 +60,13 @@ sessionRouter.post("/register", async (req, res) => {
       return res
         .status(401)
         .json({ message: "El correo ya se asignó a otra cuenta" });
-    let user = await registerUser(
+    let user = await registerUser({  
       first_name,
       last_name,
       username,
       email,
       password
-    );
+    });
     console.log(user);
 
     delete user.password;

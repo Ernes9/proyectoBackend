@@ -21,7 +21,7 @@ export default class UserDAO {
   }
 
   async create(user) {
-    return await UserModel.insertMany(user);
+    return await UserModel.create(user);
   }
   
   async findByIdAndUpdate(id) {

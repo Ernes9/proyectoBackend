@@ -1,20 +1,25 @@
-<div class="container">
-    <h1 class="mb-4">PRODUCTOS</h1>
-    {{#if user}}
-        <div class="session-status d-flex justify-content-between align-items-center mb-4">
-            <p>Bienvenido {{user.first_name}} {{user.last_name}}</p>
-            <a href="/session/logout" class="btn btn-danger mb-4 ml-4">Cerrar sesión</a>
-        </div>
-    {{/if}}
-    <div class="row productos">
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-4">PRODUCTOS</h1>
+        {{#if user}}
+            <div>
+                <span class="mr-2">Bienvenido, <strong>{{user.first_name}} {{user.last_name}}</strong></span>
+                <a href="/cart/{{user._id}}" class="btn btn-warning mr-2">Carrito</a>
+                <a href="/session/logout" class="btn btn-danger">Cerrar sesión</a>
+            </div>
+        {{/if}}
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
         {{#each prods}}
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-body">
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="{{this.image}}" class="card-img-top" alt="{{this.title}}">
+                    <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{this.title}}</h5>
                         <p class="card-text">{{this.description}}</p>
                         <p class="card-text"><strong>Precio: </strong>${{this.price}}</p>
-                        <button class="btn btn-primary botonAgregar" data-id={{this._id}}>Agregar al carrito</button>
+                        <button class="btn btn-primary mt-auto botonAgregar" data-id={{this._id}} onclick="">Agregar al carrito</button>
                     </div>
                 </div>
             </div>
@@ -23,5 +28,6 @@
 </div>
 
 <script src="/js/products.js"></script>
+
 
 

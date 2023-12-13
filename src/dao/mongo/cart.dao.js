@@ -12,7 +12,7 @@ export default class CartDAO {
   }
 
   async getCartById(id) {
-    return await CartModel.findById(id).populate("products.product").lean();
+    return await CartModel.findById(id).populate("products.product").lean().exec();
   }
 
   async update(id, data) {

@@ -23,7 +23,8 @@ export const getAllCarts = async () => {
 
 export const getCartById = async (id) => {
   try {
-    const cart = await cartDAO.findById(id);
+    const cart = await cartDAO.getCartById(id);
+    console.log("CARRITO ENCONTRADO(service): ", cart)
     const result = {
       error: false,
       msg: "¡Carrito encontrado por ID!",
@@ -57,10 +58,11 @@ export const postNewCart = async () => {
 
 export const postAddProduct = async (cartId, productId) => {
   try {
-    const cart = await cartDAO.findById(cartId);
+    console.log("Ambos: ", cartId + productId)
+    const cart = await cartDAO.getCartById(cartId);
     cart.products.push({ product: productId });
     await cartDAO.update(cart._id, cart);
-    const cartUpdated = await cartDAO.findById(cart._id);
+    const cartUpdated = await cartDAO.getCartById(cart._id);
     const result = {
       error: false,
       msg: "¡Producto agregado al carrito!",
@@ -79,13 +81,13 @@ export const postAddProduct = async (cartId, productId) => {
 
 export const deleteProduct = async (cartId, productId) => {
   try {
-    const cart = await cartDAO.findById(cartId);
+    const cart = await cartDAO.getCartById(cartId);
     const filter = cart.products.filter(
       (prods) => prods.product._id != productId
     );
     cart.products = filter;
     await cartDAO.update(cart._id, cart);
-    const productRemoved = await cartDAO.findById(cart._id);
+    const productRemoved = await cartDAO.getCartById(cart._id);
     const result = {
       error: false,
       msg: "Producto removido con éxito",
@@ -104,10 +106,10 @@ export const deleteProduct = async (cartId, productId) => {
 
 export const deleteAllProducts = async (cartId) => {
   try {
-    const cart = await cartDAO.findById(cartId);
+    const cart = await cartDAO.getCartById(cartId);
     cart.products = [];
     await cartDAO.update(cart._id, cart);
-    const cartEmpty = await cartDAO.findById(cart._id);
+    const cartEmpty = await cartDAO.getCartById(cart._id);
     const result = { error: false, msg: "Carrito vaciado", update: cartEmpty };
     return result;
   } catch (e) {
@@ -122,7 +124,7 @@ export const deleteAllProducts = async (cartId) => {
 
 export const putQuantity = async (cartId, productId, newQuantity) => {
   try {
-    const cart = await cartDAO.findById(cartId);
+    const cart = await cartDAO.getCartById(cartId);
     const indexProduct = cart.products.findIndex(
       (prod) => prod.product._id == cart._id
     );
@@ -132,7 +134,7 @@ export const putQuantity = async (cartId, productId, newQuantity) => {
     selectedProduct.quantity = selectedProduct.quantity + newQuantity.quantity;
     cart.products[indexProduct] = selectedProduct;
     await cartDAO.update(cart._id, cart);
-    const updatedCart = await cartDAO.findById(cart._id);
+    const updatedCart = await cartDAO.getCartById(cart._id);
     const result = {
       error: false,
       msg: "¡Cantidad del producto actualizada!",

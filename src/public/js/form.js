@@ -7,7 +7,7 @@ form.addEventListener("submit", async (event) => {
     data.forEach((value, key) => obj[key] = value)
 
 
-    const response = await fetch("session/login",{
+    const response = await fetch("login",{
         method: "POST",
         body: JSON.stringify(obj),
         headers: {
@@ -16,6 +16,14 @@ form.addEventListener("submit", async (event) => {
     })
 
     const responseData = await response.json()
+
+    if (response.ok) {
+        localStorage.setItem("accessToken", responseData.accessToken);
+        window.location.href = responseData.redirectUrl; // Redirige al usuario
+    } else {
+        const errorResponse = await response.json();
+        console.error('Error:', errorResponse.message);
+    }
 
     localStorage.setItem("accessToken", responseData.accessToken)
 })

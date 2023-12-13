@@ -2,7 +2,8 @@ import express from "express";
 import handlebars from "express-handlebars";
 import productsApiRouter from "./routes/products.router.js";
 import productsRouter from "./routes/products.views.js";
-import cartRouter from "./routes/carts.router.js";
+import cartApiRouter from "./routes/carts.router.js";
+import cartRouter from "./routes/carts.views.js";
 import realTimeProductsRouter from "./routes/realTimeProducts.js";
 import sessionRouter from "./routes/user.router.js";
 import { Server as HTTPServer } from "http";
@@ -33,8 +34,9 @@ import config from "./utils/swagger.js"
 
 // DIRNAME
 // Lo tuve que poner en el app, porque si no me daba error
-import { dirname } from "path";
+import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import passport from "passport";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -58,18 +60,6 @@ app.engine("handlebars", handlebars.engine());
 app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");
 
-InitLocalStrategy();
-
-// Nos transforma la informacion que venga de los query params para poder utilizarla como objeto
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(express.static("./public"));
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
-app.use(cookieParser());
-app.use(winston)
 app.use(
   session({
     store: new MongoStore({
@@ -81,15 +71,31 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+InitLocalStrategy();
+app.use(passport.initialize())
+app.use(passport.session());
+
+// Nos transforma la informacion que venga de los query params para poder utilizarla como objeto
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
+app.use(cookieParser());
+app.use(winston)
 app.use(compression({
   brotli:{enabled:true,zlib:{}}
 }));
 
 app.use("/api/docs", serve, setup(specs))
 app.use("/api/productos", productsApiRouter);
-app.use("/api/cart", cartRouter);
+app.use("/api/cart", cartApiRouter);
 app.use("/api/auth", authRouter);
 app.use("/productos", productsRouter);
+app.use("/cart", cartRouter)
 app.use("/realtimeproducts", realTimeProductsRouter);
 app.use("/chat", chatRouter);
 app.use("/session", sessionRouter);
