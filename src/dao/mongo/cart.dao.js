@@ -18,4 +18,8 @@ export default class CartDAO {
   async update(id, data) {
     return await CartModel.updateOne({ _id: id }, data);
   }
+
+  async delete(cid) {
+    return await CartModel.findByIdAndDelete(cid)
+  }
 }

@@ -4,8 +4,9 @@
         {{#if user}}
             <div>
                 <span class="mr-2">Bienvenido, <strong>{{user.first_name}} {{user.last_name}}</strong></span>
-                <a href="/cart/{{user._id}}" class="btn btn-warning mr-2">Carrito</a>
-                <a href="/session/logout" class="btn btn-danger">Cerrar sesión</a>
+                <a href="/session/current" class="btn btn-info cerrarSesion">Perfil</a>
+                <a class="btn btn-warning mr-2 carrito">Carrito</a>
+                <a href="/session/logout" class="btn btn-danger cerrarSesion">Cerrar sesión</a>
             </div>
         {{/if}}
     </div>
@@ -19,7 +20,7 @@
                         <h5 class="card-title">{{this.title}}</h5>
                         <p class="card-text">{{this.description}}</p>
                         <p class="card-text"><strong>Precio: </strong>${{this.price}}</p>
-                        <button class="btn btn-primary mt-auto botonAgregar" data-id={{this._id}} onclick="">Agregar al carrito</button>
+                        <button class="btn btn-primary mt-auto botonAgregar" data-id={{this._id}}>Agregar al carrito</button>
                     </div>
                 </div>
             </div>
@@ -28,6 +29,7 @@
 </div>
 
 <script src="/js/products.js"></script>
+
 
 
 

@@ -18,5 +18,5 @@ switch (env) {
     logger = loggerProd;
     break;
 }
-console.log(env)
+
 export default logger;

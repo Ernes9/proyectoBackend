@@ -17,7 +17,7 @@ import FileStore from "session-file-store";
 import MongoStore from "connect-mongo";
 import crypto from "crypto";
 import authRouter from "./routes/auth.views.js";
-import loggerRouter from "./routes/logger.router.js"
+import loggerRouter from "./routes/logger.router.js";
 import InitLocalStrategy from "./config/passport.config.js";
 import ProductDAO from "./dao/mongo/product.dao.js";
 import mockingRouter from "./routes/mocking.router.js";
@@ -25,12 +25,12 @@ import winston from "./utils/winston.middleware.js";
 import winstonErrorMiddleware from "./utils/winstonError.middleware.js";
 import cluster from "cluster";
 import { cpus } from "os";
-import ENV_CONFIG from "./config/config.js"
+import ENV_CONFIG from "./config/config.js";
 import compression from "express-compression";
 
 import swaggerJSDoc from "swagger-jsdoc";
 import { serve, setup } from "swagger-ui-express";
-import config from "./utils/swagger.js"
+import config from "./utils/swagger.js";
 
 // DIRNAME
 // Lo tuve que poner en el app, porque si no me daba error
@@ -40,14 +40,12 @@ import passport from "passport";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-
 const conn = await mongoose.connect(ENV_CONFIG.MONGO_URI);
 export const messageManager = new messagesManagerDB();
 
-const specs = swaggerJSDoc(config)
+const specs = swaggerJSDoc(config);
 
 const productDAO = new ProductDAO();
-
 
 const app = express();
 
@@ -60,6 +58,7 @@ app.engine("handlebars", handlebars.engine());
 app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");
 
+
 app.use(
   session({
     store: new MongoStore({
@@ -70,12 +69,12 @@ app.use(
     resave: true,
     saveUninitialized: true,
   })
-);
-
+  );
+  
 InitLocalStrategy();
-app.use(passport.initialize())
+app.use(passport.initialize());
 app.use(passport.session());
-
+  
 // Nos transforma la informacion que venga de los query params para poder utilizarla como objeto
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -85,34 +84,36 @@ app.use((req, res, next) => {
   next();
 });
 app.use(cookieParser());
-app.use(winston)
-app.use(compression({
-  brotli:{enabled:true,zlib:{}}
-}));
+app.use(winston);
+app.use(
+  compression({
+    brotli: { enabled: true, zlib: {} },
+  })
+);
 
-app.use("/api/docs", serve, setup(specs))
+app.use("/api/docs", serve, setup(specs));
 app.use("/api/productos", productsApiRouter);
 app.use("/api/cart", cartApiRouter);
 app.use("/api/auth", authRouter);
 app.use("/productos", productsRouter);
-app.use("/cart", cartRouter)
+app.use("/cart", cartRouter);
 app.use("/realtimeproducts", realTimeProductsRouter);
 app.use("/chat", chatRouter);
 app.use("/session", sessionRouter);
 app.use("/mockingproducts", mockingRouter);
-app.use('/api/loggers', loggerRouter)
+app.use("/api/loggers", loggerRouter);
 
 const numberOfProcess = cpus().length;
 
-app.use(winstonErrorMiddleware)
+app.use(winstonErrorMiddleware);
 
-if(cluster.isPrimary){
-  console.log("Primary")
-  for(let i=1; i<=numberOfProcess; i++){
-    cluster.fork()
+if (cluster.isPrimary) {
+  console.log("Primary");
+  for (let i = 1; i <= numberOfProcess; i++) {
+    cluster.fork();
   }
-} else{
-  console.log('worker', process.pid)
+} else {
+  console.log("worker", process.pid);
   httpServer.listen(8080, () => console.log(`Escuchando en el puerto 8080`));
 }
 

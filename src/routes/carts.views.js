@@ -7,9 +7,9 @@ const cartDao = new CartDAO();
 
 cartRouter.get("/:id", async (req, res) => {
     const id = req.params.id;
-    const user = await cartDao.getCartById(id);
-    console.log("USUARIO: ", user)
-    res.render("cart", user)
+    if (id === "null") return res.render("cart", null)
+    const cart = await cartDao.getCartById(id)
+    return res.render("cart", {cart})
 })
 
 export default cartRouter;

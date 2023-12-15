@@ -6,12 +6,12 @@ const productsApiRouter = Router();
 
 productsApiRouter.get('/', ProductController.GETAllProducts);
 
-productsApiRouter.get('/:id', ProductController.GETProductById)
+productsApiRouter.get('/:pid', ProductController.GETProductById)
 
-productsApiRouter.post("/", passport.authenticate('local'),ProductController.POSTNewProduct)
+productsApiRouter.post("/",ProductController.POSTNewProduct)
 
-productsApiRouter.delete("/:id", passport.authenticate('local'), ProductController.DELETEProductById)
+productsApiRouter.delete("/:pid", ProductController.DELETEProductById)
 
-productsApiRouter.put("/:id", passport.authenticate('local'), ProductController.PUTUpdateProduct)
+productsApiRouter.put("/:pid", ProductController.PUTUpdateProduct)
 
 export default productsApiRouter;

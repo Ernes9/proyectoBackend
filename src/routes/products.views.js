@@ -6,6 +6,7 @@ const productsRouter = Router();
 productsRouter.get("/", async (req, res) => {
     let {limit, page, query, sort} = req.query;
     let productos;
+    console.log(req.cookies)
     try{
         productos = await ProductModel.paginate(query || {}, {
             lean: true,

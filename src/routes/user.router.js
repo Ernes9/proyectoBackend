@@ -22,11 +22,6 @@ sessionRouter.post("/login", async (req, res) => {
       await loginUser(email, password) ||
       email == "adminCoder@coder.com";
     if (!user) res.status(401).json({ message: "Credenciales inválidas." });
-    const token = generateToken({ sub: user._id, user: { email } });
-    res.cookie("accessToken", token, {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
     console.log("cookie:", res.cookie)
     const userSession = {
       _id: user._id,
@@ -36,7 +31,11 @@ sessionRouter.post("/login", async (req, res) => {
       role: user.role,
     };
     req.session.user = userSession;
-    console.log("Sesion 1", req.session.user)
+    const token = generateToken({ sub: user._id, user: { email } });
+    res.cookie("accessToken", token, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
     res.status(200).json({ message: "Inicio de sesión exitoso", redirectUrl: "../productos" });
   } catch (e) {
     console.log(e);
@@ -52,8 +51,6 @@ sessionRouter.get("/register", isLogged, (req, res) => {
 
 sessionRouter.post("/register", async (req, res) => {
   try {
-    console.log("Post en /register");
-    console.log(req.body);
     const { first_name, last_name, email, username, password } = req.body;
     const exists = await getUserByEmail(email);
     if (exists)
@@ -67,11 +64,17 @@ sessionRouter.post("/register", async (req, res) => {
       email,
       password
     });
-    console.log(user);
 
     delete user.password;
     delete user.salt;
     req.session.user = user;
+
+    const token = generateToken({ sub: user._id, user: { email } });
+    res.cookie("accessToken", token, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
+
     res.status(200).redirect("../productos");
   } catch (e) {
     console.log(e);
@@ -80,7 +83,7 @@ sessionRouter.post("/register", async (req, res) => {
 });
 
 sessionRouter.get("/logout", isAuthenticated, async (req, res) => {
-  req.session.destroy((er) => {
+    req.session.destroy((er) => {
     res.status(200).redirect("/session/login");
   });
 });

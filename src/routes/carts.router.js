@@ -9,7 +9,7 @@ cartRouter.post("/", passport.authenticate('jwt', { session: true }), CartContro
 
 cartRouter.get("/", CartController.GETAllCarts);
 
-cartRouter.get("/:id", CartController.GETCartById)
+cartRouter.get("/:cid", CartController.GETCartById)
 
 cartRouter.get("/:cid/purchase", passport.authenticate('local'), CartController.POSTPurchase)
 
@@ -18,6 +18,8 @@ cartRouter.post("/:cid/product/:pid", CartController.POSTAddProduct)
 cartRouter.delete('/:cid/product/:pid', CartController.DELETERemoveProduct);
 
 cartRouter.delete('/:cid', CartController.DELETEAllProducts)
+
+cartRouter.delete("/test/:cid", CartController.DELETECartById);
 
 cartRouter.put("/:cid/product/:pid", CartController.PUTQuantity);
 

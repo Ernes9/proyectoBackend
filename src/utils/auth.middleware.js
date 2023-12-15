@@ -15,8 +15,8 @@ const isLogged = (req, res, next) => {
 }
 
 const userOrPremium = (req, res, next) => {
-    console.log(req.user)
-    const user = req.user;
+    console.log("SEEEEEEEEEEESION", req.session.user)
+    const user = req.session.user;
     if(user.role == undefined) res.status(403).json({message: 'Forbidden'});
     if (user.role !== 'user' && user.role !== 'premium') {
         res.status(403).json({

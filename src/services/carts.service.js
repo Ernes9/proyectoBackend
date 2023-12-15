@@ -1,6 +1,8 @@
 import CartDAO from "../dao/mongo/cart.dao.js";
+// import UserDAO from "../dao/mongo/user.dao.js";
 
 const cartDAO = new CartDAO();
+// const userDAO = new UserDAO();
 
 export const getAllCarts = async () => {
   try {
@@ -24,7 +26,6 @@ export const getAllCarts = async () => {
 export const getCartById = async (id) => {
   try {
     const cart = await cartDAO.getCartById(id);
-    console.log("CARRITO ENCONTRADO(service): ", cart)
     const result = {
       error: false,
       msg: "¡Carrito encontrado por ID!",
@@ -41,10 +42,13 @@ export const getCartById = async (id) => {
   }
 };
 
-export const postNewCart = async () => {
+export const postNewCart = async (req) => {
   try {
     const cart = await cartDAO.create();
     const result = { error: false, msg: "¡Carrito creado!", info: cart };
+    // const user = await userDAO.findById(req.user.id)
+    // user.cart._id = cart._id;
+    // await user.save()
     return result;
   } catch (e) {
     const result = {
@@ -58,7 +62,6 @@ export const postNewCart = async () => {
 
 export const postAddProduct = async (cartId, productId) => {
   try {
-    console.log("Ambos: ", cartId + productId)
     const cart = await cartDAO.getCartById(cartId);
     cart.products.push({ product: productId });
     await cartDAO.update(cart._id, cart);
@@ -104,6 +107,25 @@ export const deleteProduct = async (cartId, productId) => {
   }
 };
 
+export const DeleteCartById = async(cid)=>{
+  try {
+    const cartDeleted = await cartDAO.delete(cid);
+    const result = {
+      error: false,
+      msg: "Carrito eliminado con éxito",
+      update: cartDeleted,
+    };
+    return result
+  } catch (e) {
+    const result = {
+      error: true,
+      msg: "Error, no se ha podido eliminar el carrito solicitado",
+      info: e,
+    };
+    return result
+  }
+}
+
 export const deleteAllProducts = async (cartId) => {
   try {
     const cart = await cartDAO.getCartById(cartId);
@@ -126,12 +148,14 @@ export const putQuantity = async (cartId, productId, newQuantity) => {
   try {
     const cart = await cartDAO.getCartById(cartId);
     const indexProduct = cart.products.findIndex(
-      (prod) => prod.product._id == cart._id
+      (prod) => prod.product._id == productId
     );
+
     const selectedProduct = cart.products.find(
       (prod) => prod.product._id == productId
     );
-    selectedProduct.quantity = selectedProduct.quantity + newQuantity.quantity;
+
+    selectedProduct.quantity = selectedProduct.quantity + newQuantity;
     cart.products[indexProduct] = selectedProduct;
     await cartDAO.update(cart._id, cart);
     const updatedCart = await cartDAO.getCartById(cart._id);

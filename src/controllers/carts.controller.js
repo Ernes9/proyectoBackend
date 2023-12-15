@@ -1,44 +1,53 @@
 import * as CartService from "../services/carts.service.js";
 
+
 export const GETAllCarts = async (req, res) => {
   const carts = await CartService.getAllCarts();
-  res.json(carts);
+  res.status(200).json(carts);
 };
 
 export const GETCartById = async (req, res) => {
   const { cid } = req.params;
   const cart = await CartService.getCartById(cid);
-  res.json(cart);
+  console.log("SESSION", req.session.user)
+  res.status(200).json(cart);
 };
 
 export const POSTNewCart = async (req, res) => {
-  const cart = await CartService.postNewCart();
-  res.json(cart);
+  const cart = await CartService.postNewCart(req);
+  res.status(200).json(cart);
 };
 
 export const POSTAddProduct = async (req, res) => {
   const { cid, pid } = req.params;
   const cart = await CartService.postAddProduct(cid, pid);
-  res.json(cart);
+  res.status(200).json(cart);
 };
 
 export const DELETERemoveProduct = async (req, res) => {
   const { cid, pid } = req.params;
   const status = await CartService.deleteProduct(cid, pid);
-  res.json(status);
+  res.status(200).json(status);
 };
+
+export const DELETECartById= async (req, res) => {
+  const { cid } = req.params;
+  const deletedCart = await CartService.DeleteCartById(cid);
+  res.status(200).json(deletedCart);
+}
 
 export const DELETEAllProducts = async (req, res) => {
   const { cid } = req.params;
   const status = await CartService.deleteAllProducts(cid);
-  res.json(status);
+  res.status(200).json(status);
 };
 
 export const PUTQuantity = async (req, res) => {
   const { cid, pid } = req.params;
-  const newQuantity = req.body;
+  const { newQuantity } = req.body;
+  console.log("CANTIDAD: ", newQuantity)
   const update = await CartService.putQuantity(cid, pid, newQuantity);
-  res.json(update);
+  res.status(200).json(update);
 };
 
 export const POSTPurchase = async (req, res) => {
