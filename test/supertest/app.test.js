@@ -3,10 +3,10 @@ import supertest from "supertest";
 
 const requester = supertest(`http://localhost:8080/api`);
 const requesterSession = supertest("http://localhost:8080/session")
-
 let cookies;
 
-describe("Testeando los recursos de mi ecommerce", () => {
+
+describe("Testeando los recursos de mi ecommerce", async () => {
   describe("Testeando Products", () => {
     it("INICIANDO SESIÓN PARA PODER CREAR PRODUCTO", async () => {
       const user = {
@@ -14,6 +14,7 @@ describe("Testeando los recursos de mi ecommerce", () => {
         password: "adminCod3r123"
       }
       const response = await requesterSession.post("/login").send(user)
+
       expect(response).to.have.property("statusCode", 200);
     })
     let id = null;
@@ -44,8 +45,8 @@ describe("Testeando los recursos de mi ecommerce", () => {
         description: "Descripción actualizada del producto 1",
       };
       const response = await requester
-        .put("/productos/" + id)
-        .send(productUpdate);
+      .put("/productos/" + id)
+      .send(productUpdate);
       const { _body } = response;
       expect(_body).to.be.a("object");
     });
@@ -61,12 +62,13 @@ describe("Testeando los recursos de mi ecommerce", () => {
   });
   describe("Carrito", () => {
     let cartId;
-    let productId = "64d94197acde9964de79f082"
+    let productId = "64d94197acde9964de79f082";
+    let username = "USERNAME";
     it("REGISTRANDONOS PARA PODER CREAR CARRITO", async () => {
       const newUser = {
         first_name: "NOMBRE",
         last_name: "APELLIDO", 
-        username: "USERNAME", 
+        username, 
         email: "coder@gmail.com", 
         password: "p4ssw0rd"
       }
@@ -110,11 +112,53 @@ describe("Testeando los recursos de mi ecommerce", () => {
     })
     it("Testeando que la eliminación de un carrito devuelva status 200", async () => {
       const response = await requester.delete(`/cart/test/${cartId}`);
-      console.log(response);
       expect(response).to.have.property("statusCode", 200);
     })
-    it("CERRANDO SESIÓN", async () => {
+    it("CERRANDO SESION", async () => {
       const response = await requesterSession.get("/logout").redirects(1);
+      expect(response).to.have.property("statusCode", 200);
+    })
+  })
+
+  describe("Testeando usuario", () => {
+    let username = "USERNAME";
+    let email = "coder@gmail.com";
+    let id;
+  
+    it("Testeando que el inicio de sesión de un usuario devuelva status 200 (Ya me registré antes)", async () => {
+      const user = {
+        email,
+        password: "p4ssw0rd"
+      }
+      
+      const response = await requesterSession.post("/login").send(user)
+      
+      cookies = response.header['set-cookie']
+
+      const cookie = {
+        name: response.header["set-cookie"][0].split("=")[0],
+        value: response.header["set-cookie"][0].split("=")[1],
+      };
+
+      expect(response).to.have.property("statusCode", 200);
+    })
+    it("Testeando que el cambio de contraseña de un usuario devuelva status 200", async () => {
+      const newPassword = { newPassword: "n3w-p4ssw0rd"};
+      const response = await requesterSession.post(`/resetpassword/${email}`).send(newPassword)
+      expect(response).to.have.property("statusCode", 200);
+    })
+    it("Testeando que el cambio de rol de USER a PREMIUM devuelva status 200", async () => {
+      const userResponse = await requesterSession.get(`/test/user/${username}`);
+      id = userResponse._body.usuario._id;
+      const response = await requesterSession.get(`/premium/${id}`).set("Cookie", cookies);;
+      expect(response).to.have.property("statusCode", 200);
+    })
+    it("Testeando que el cierre de sesión de un usuario devuelva status 200", async () => {
+      const response = await requesterSession.get("/logout").redirects(1);
+      expect(response).to.have.property("statusCode", 200);
+    })
+    it("ELIMINANDO USUARIO", async () => {
+      const response = await requesterSession.delete(`/test/${id}`);
       expect(response).to.have.property("statusCode", 200);
     })
   })

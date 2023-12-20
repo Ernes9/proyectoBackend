@@ -1,12 +1,19 @@
 <div class="container my-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="display-4">PRODUCTOS</h1>
+        {{#if isAdminOrPremium}}
+            <a href="/realtimeproducts" class="btn btn-warning">Administrar Productos</a>
+        {{/if}}
         {{#if user}}
             <div>
-                <span class="mr-2">Bienvenido, <strong>{{user.first_name}} {{user.last_name}}</strong></span>
-                <a href="/session/current" class="btn btn-info cerrarSesion">Perfil</a>
+                <span class="mr-2">Bienvenido, <strong>{{user.fullname}}</strong></span>
+                <a href="/session/current" class="btn btn-info">Perfil</a>
                 <a class="btn btn-warning mr-2 carrito">Carrito</a>
                 <a href="/session/logout" class="btn btn-danger cerrarSesion">Cerrar sesión</a>
+            </div>
+        {{else}}
+            <div>
+                <a href="/session/login" class="btn btn-success">Iniciar Sesión</a>
             </div>
         {{/if}}
     </div>

@@ -15,9 +15,7 @@ const isLogged = (req, res, next) => {
 }
 
 const userOrPremium = (req, res, next) => {
-    console.log("SEEEEEEEEEEESION", req.session.user)
     const user = req.session.user;
-    if(user.role == undefined) res.status(403).json({message: 'Forbidden'});
     if (user.role !== 'user' && user.role !== 'premium') {
         res.status(403).json({
             message: 'Forbidden'
@@ -27,8 +25,8 @@ const userOrPremium = (req, res, next) => {
     }
 }
 
-const isAdmin = (req, res, next) => {
-    if (req.session.user.role === "admin" || req.session.user.email === 'adminCoder@coder.com' && req.session.user.password === 'adminCod3r123' ){
+const isAdminOrPremium = (req, res, next) => {
+    if (req.user.role === "admin"|| req.user.role === "premium" || req.user.email === 'adminCoder@coder.com' && req.user.password === 'adminCod3r123' ){
         next()
     } else {
         res.status(403).json({ message: 'Acceso no autorizado.' });
@@ -44,4 +42,4 @@ const isUser = (req, res, next) => {
 }
 
 
-export { isAuthenticated, isAdmin, isLogged, isUser, userOrPremium };
+export { isAuthenticated, isAdminOrPremium, isLogged, isUser, userOrPremium };

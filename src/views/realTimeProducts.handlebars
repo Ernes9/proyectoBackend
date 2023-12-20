@@ -1,9 +1,188 @@
+<div class="container p-3">
+    <div class="row">
+      <div class="col-12 p-2">
+            <h1>Lista de productos <button class="btn btn-info m-2" onclick="location.href='/productos'">Volver a productos</button></h1>
+            <table class="table ">
+                <thead >
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Thumbnail</th>
+                        <th scope="col">Code</th>
+                        <th scope="col">Stock</th>
+                    </tr>
+                </thead>
+                <tbody id="listaProductos">
+                </tbody>
+            </table>
+        </div>
+        <div class="col-6 p-1">
+            <h2>Agregar producto</h2>
+            <form class="py-2" id="addProduct">
+                <div class="mb-3">
+                    <div class="row">
+                        <label for="title" class="col-3 col-form-label">Title *</label>
+                        <div class="col-9">
+                            <input required type="text" class="form-control col-9" id="title" name="code">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="row">
+                        <label for="description" class="col-3 col-form-label">Description *</label>
+                        <div class="col-9">
+                            <input required type="text" class="form-control" id="description" name="description">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="row">
+                        <label for="code" class="col-3 col-form-label">Code *</label>
+                        <div class="col-9">
+                            <input required type="text" class="form-control" id="code" name="code">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="row">
+                        <label for="price" class="col-3 col-form-label">Price *</label>
+                        <div class="col-9">
+                            <input required type="number" class="form-control" id="price" name="price">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="row">
+                        <label for="stock" class="col-3 col-form-label">Stock *</label>
+                        <div class="col-9">
+                            <input required type="number" class="form-control" id="stock" name="stock">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="row">
+                        <label for="thumbnail" class="col-3 col-form-label">Thumbnail</label>
+                        <div class="col-9">
+                            <input type="object" class="form-control" id="thumbnail" name="thumbnail">
+                        </div>
+                    </div>                    
+                </div>
+                <button  id="createBtn" data-email={{this.userInfo.email}} data-role={{this.userInfo.role}} type="submit" value="Submit" class="btn btn-primary">Submit</button>
+            </form>
+            <hr>
+            <h2>Eliminar producto</h2>
+            <form id="deleteProduct">
+                <div class="form-group my-2">
+                    <div class="row">
+                        <label for="pid" class="col-3 col-form-label">Product ID *</label>
+                        <div class="col-6">
+                            <input required type="text" class="form-control" id="pid" name="pid">
+                        </div>
+                    </div> 
+                </div>
+                <button id="deletebtn" data-email={{this.userInfo.email}} data-role={{this.userInfo.role}} type="submit" value="Submit" class="btn btn-primary">Submit</button>
+            </form>
+            <hr>
+            <h2>Modificar producto</h2>
+            <form id="modProduct">
+                <div class="form-group my-2 mb-3">
+                    <div class="row">
+                        <label for="pid2" class="col-3 col-form-label">Product ID*</label>
+                        <div class="col-6">
+                            <input required type="text" class="form-control" id="pid2" name="pid2">
+                        </div>
+                    </div>
+                    <div class="mb-3 mt-3">
+                        <div class="row">
+                        <label for="thumbnail" class="col-3 col-form-label">Title</label>
+                        <div class="col-6">
+                            <input type="text" class="form-control" id="body" name="body">
+                        </div>
+                    </div>
+                    </div>
 
-<div>
-    <h1>PRODUCTS</h1>
-    <div class="products">
+                    <div class="mb-3">
+                    <div class="row">
+                        <label for="description" class="col-3 col-form-label">Description *</label>
+                        <div class="col-9">
+                            <input type="text" class="form-control" id="description2" name="description">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="row">
+                        <label for="code" class="col-3 col-form-label">Code *</label>
+                        <div class="col-9">
+                            <input type="text" class="form-control" id="code2" name="code">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="row">
+                        <label for="price" class="col-3 col-form-label">Price *</label>
+                        <div class="col-9">
+                            <input type="number" class="form-control" id="price2" name="price">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="row">
+                        <label for="stock" class="col-3 col-form-label">Stock *</label>
+                        <div class="col-9">
+                            <input  type="number" class="form-control" id="stock2" name="stock">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="row">
+                        <label for="thumbnail" class="col-3 col-form-label">Thumbnail</label>
+                        <div class="col-9">
+                            <input type="object" class="form-control" id="thumbnail2" name="thumbnail">
+                        </div>
+                    </div>                    
+                </div>       
+                </div>
+                <button id="modbtn" data-email={{this.userInfo.email}} data-role={{this.userInfo.role}} type="submit" value="Submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
         
     </div>
 </div>
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/socket.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{{!-- 
+<div>
+    <h1>PRODUCTS</h1>
+    <div class="products mx-auto">
+        
+    </div>
+</div>
+ --}}

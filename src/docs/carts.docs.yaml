@@ -14,19 +14,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/cart'
               example:
-                error: false,
-                msg: "¡Carritos encontrados!",
+                error: false
+                msg: "¡Carritos encontrados!"
                 info:
-                  _id: 60b4b0a9e6c3c2b4c8a7b8b2
-                  products: [
-                      { id: "1", quantity: 2 },
-                      { id: "2", quantity: 1 }
-                  ]
-                  _id: 60b4b0a9e6c3c2b4c8a7a2c7
-                  products: [
-                      { id: "6", quantity: 6 },
-                      { id: "3", quantity: 4 }
-                  ]
+                  _id: 60b4b0a9e2c3c2b1c4a5b8b2
+                  products: [{},{}]
 
           "400":
             description: Bad request.
@@ -90,16 +82,13 @@ paths:
               schema:
                 type: object
                 items:
-                  $ref: '#/components/schemas/cart'
+                  $ref: '#/components/schemas/Cart'
               example:
                 error: false
                 msg: ¡Carrito encontrado por ID!
                 info:
-                  _id: 60b4b0a9e6c3c2b4c8a7b8b2
-                  products: [
-                      { id: "1", quantity: 2 },
-                      { id: "2", quantity: 1 }
-                  ]
+                  _id: 60b4b5a9e6c3c2b4cj67b8b2
+                  products: [{},{}]
         "400":
           description: Bad request.
           content:
@@ -133,16 +122,13 @@ paths:
           content:
             application/json:
               schemas:
-                $ref: "#/componente/schemas/cart"
+                $ref: "#/componente/schemas/Cart"
               example:
                 error: false
                 msg: ¡Producto agregado al carrito!
                 update:
-                  _id: 60b4b0a9e6c3c2b4c8a7b8b2
-                  products: [
-                      { id: "1", quantity: 2 }
-                      { id: "2", quantity: 1 }
-                  ]
+                  _id: 60b2b0a9e6c3ch2b4c8a7b8b2
+                  products: [{}]
         "400":
           description: Bad request.
           content:
@@ -175,15 +161,13 @@ paths:
           content:
             application/json:
               schemas:
-                $ref: "#/componente/schemas/cart"
+                $ref: "#/componente/schemas/Cart"
               example:
                 error: false
                 msg: Producto removido con éxito
                 update:
-                  _id: 60b4b0a9e6c3c2b4c8a7b8b2
-                  products: [
-                      { id: "1", quantity: 2 }
-                  ]
+                  _id: 60b4b1a9f1c3c2b4c8a7b8b2
+                  products: [{}]
         "400":
           description: Bad request.
           content:
@@ -216,15 +200,13 @@ paths:
           content:
             application/json:
               schemas:
-                $ref: "#/componente/schemas/cart"
+                $ref: "#/componente/schemas/Cart"
               example:
                 error: false
                 msg: ¡Cantidad del producto actualizada!
                 info:
-                  _id: 60b4b0a9e6c3c2b4c8a7b8b2
-                  products: [
-                      { id: "5", quantity: 11 }
-                  ]
+                  _id: 60b4b0a9b7c3c2b4c8a7b8b2
+                  products: [{}]
 
 components:
   schemas:

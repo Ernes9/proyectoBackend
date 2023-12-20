@@ -1,0 +1,178 @@
+paths:
+  /session/register:
+    post:
+      summary: Registra a un usuario
+      description: Crea a un usuario en la DB
+      tags:
+        - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              first_name: Ernesto
+              last_name: Baldovino
+              username: erne31
+              email: coder@gmail.com
+              password: p455w0rd
+      responses:
+        "200":
+          description: Redirecciona a la vista de productos
+          content:
+            application/json:
+              example:
+                message: El correo ya se asignó a otra cuenta
+        "401":
+          description: El correo ya se asignó a otra cuenta
+          content:
+            application/json:
+              example:
+                message: El correo ya se asignó a otra cuenta
+        "500":
+          description: Error en el servidor
+          content:
+            application/json:
+              example:
+                message: Error en el servidor           
+
+  /session/login:
+    post:
+      summary: Inicia sesión
+      description: Inicia sesión
+      tags:
+        - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              email: coder@gmail.com
+              password: p455w0rd
+      responses:
+      "200":
+        description: Inicia sesión exitosamente
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example: 
+                message: "Inicio de sesión exitoso"
+                redirectUrl: "../productos"
+      "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              example:
+                error: Credenciales inválidas
+      "502":
+          description: Error en el servidor
+          content:
+            application/json:
+              example:
+                message: Error en el servidor
+
+  /session/logout:
+    get:
+      summary: Cierra sesión
+      tags:
+        - User
+      responses:
+        "200":
+          description: Redirecciona a la vista de Login
+        "502":
+          description: Error en el servidor
+
+  /session/resetpassword/:email:
+    post:
+      summary: Cambia la contraseña del usuario
+      description: Cambiar contraseña
+      tags:
+        - User
+      parameters:
+        - name: email
+          in: path
+          description: Correo del usuario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              newPassword: n3w-P455w0rd
+      responses:
+        "200":
+          description: Devuelve una vista
+        "401":
+          description: Bad request.
+          content:
+            application/json:
+              example:
+                status: error, 
+                message: No puedes usar la misma contraseña
+        "502":
+          description: Error en el servidor
+          content:
+            application/json:
+              example:
+                status: error,
+                message: No se ha podido crear la nueva contraseña
+
+  /session/premium/:id:
+    get:
+      summary: Cambia el rol del usuario a Premium
+      tags:
+        - User
+      parameters:
+        - name: id
+          in: path
+          description: id del usuario
+      responses:
+        "200":
+          description: Devuelve una vista con el mensaje "El rol del usuario ha sido cambiado a Premium"
+        "401":
+          description: Devuelve una vista con el mensaje "El usuario ya tiene el rol Premium"
+        "502":
+          description: Error en el servidor
+          content:
+            application/json:
+              example:
+                error: Error interno del servidor
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          description: Id autogenerado de Mongo
+          type: string
+        first_name:
+          description: Nombre del usuario
+          type: string
+        last_name:
+          description: Apellido del usuario
+          type: string
+        email:
+          description: Correo electrónico del usuario
+          type: string
+        username:
+          description: Nombre de usuario
+          type: string
+        password:
+          description: Contraseña del usuario
+          type: string
+        cart:
+          description: Carrito del usuario
+          type: object
+        role:
+          description: Rol del usuario
+          type: string
+      required:
+        - first_name
+        - last_name
+        - email
+        - username
+        - password
+        - role

@@ -3,7 +3,14 @@ import ProductModel from "../../schemas/product.schema.js";
 export default class ProductDAO {
   constructor() {}
 
+  async findAll(){
+    return await ProductModel.find()
+  }
+
   async find({ limit, page, sortOpcion, query }) {
+    console.log("limit:", limit);
+    console.log("page:", page);
+    console.log("sortOpcion:", sortOpcion);
     return await ProductModel.paginate({}, { limit, page, sort: sortOpcion });
   }
 

@@ -1,17 +1,17 @@
 import { Router } from "express";
 import * as CartController from "../controllers/carts.controller.js";
-import { isUser, userOrPremium } from "../utils/auth.middleware.js";
+import { userOrPremium } from "../utils/auth.middleware.js";
 import passport from "passport";
 const cartRouter = Router();
 
 
-cartRouter.post("/", passport.authenticate('jwt', { session: true }), CartController.POSTNewCart)
+cartRouter.post("/",userOrPremium, passport.authenticate('jwt', { session: true }), CartController.POSTNewCart)
 
 cartRouter.get("/", CartController.GETAllCarts);
 
 cartRouter.get("/:cid", CartController.GETCartById)
 
-cartRouter.get("/:cid/purchase", passport.authenticate('local'), CartController.POSTPurchase)
+cartRouter.post("/:cid/purchase", CartController.POSTPurchase)
 
 cartRouter.post("/:cid/product/:pid", CartController.POSTAddProduct)
 

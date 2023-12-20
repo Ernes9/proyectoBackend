@@ -1,4 +1,6 @@
 import * as CartService from "../services/carts.service.js";
+import * as ProductService from "../services/products.service.js"
+import TicketModel from "../schemas/ticket.schema.js";
 
 
 export const GETAllCarts = async (req, res) => {
@@ -9,7 +11,6 @@ export const GETAllCarts = async (req, res) => {
 export const GETCartById = async (req, res) => {
   const { cid } = req.params;
   const cart = await CartService.getCartById(cid);
-  console.log("SESSION", req.session.user)
   res.status(200).json(cart);
 };
 
@@ -50,52 +51,114 @@ export const PUTQuantity = async (req, res) => {
   res.status(200).json(update);
 };
 
+// export const POSTPurchase = async (req, res) => {
+//   try {
+//     const { cid } = req.params;
+//     const cart = await CartService.getCartById(cid);
+//     console.log(cart)
+//     if (!cart) {
+//       res.status(404).json({ error: "Carrito no encontrado!" });
+//     }
+
+//     let totalAmount = 0;
+//     const purchasedProducts = [];
+
+//     const unprocessedProducts = cart.info.products.filter((item) => {
+//       const product = item.product;
+//       if (product.stock >= item.quantity) {
+//         product.stock -= item.quantity;
+//         totalAmount += product.price * item.quantity;
+//         purchasedProducts.push(item);
+//         return false;
+//       } else {
+//         return true;
+//       }
+//     });
+
+//     if (unprocessedProducts.length > 0) {
+//       res.status(400).json({ msg: "No se pudo completar la compra!" });
+//     }
+
+//     await Promise.all(
+//       purchasedProducts.map(async (item) => {
+//         const product = await ProductService.getProductById(item.product._id);
+//         product.stock -= item.quantity;
+//         await product.save();
+//       })
+//     );
+//     const newTicket = await TicketModel.create({
+//       code: Math.random().toString(36).substring(2, 10),
+//       amount: totalAmount,
+//       purchaser: req.user.email,
+//     });
+//     res.status(200).json({
+//       msg: "Compra finalizada",
+//       purchasedProducts,
+//       ticket: newTicket,
+//     });
+//   } catch (e) {
+//     res.status(500).json({ error: e });
+//   }
+// };
+
 export const POSTPurchase = async (req, res) => {
   try {
-    const { cid } = req.params;
-    const cart = await CartService.getCartById(cid);
-    if (!cart) {
-      res.status(404).json({ error: "Carrito no encontrado!" });
+    const { cid } = req.params
+    const cart = await CartService.getCartById(cid)
+    console.log(cart)
+
+    if (!cart) return res.status(404).json({ error: "Carrito no encontrado!" });
+  
+    let unprocessedProducts = [];
+    let purchasedProducts = [];
+    let totalAmount = 0;
+
+    try {
+      cart.info.products.forEach(item => {
+        const product = item.product;
+        console.log(product)
+        if (product.stock >= item.quantity) {
+          product.stock -= item.quantity;
+          totalAmount += product.price * item.quantity;
+          purchasedProducts.push(item);
+        } else {
+          unprocessedProducts.push(item)
+        }
+      });
+    } catch (error) {
+      console.error(error); // Loggea el error completo
+      return res.status(500).json({ error: "Error interno del servidor" });
     }
 
-    let totalAmount = 0;
-    const purchasedProducts = [];
-
-    const unprocessedProducts = cart.products.filter((item) => {
-      const product = item.product;
-      if (product.stock >= item.quantity) {
-        product.stock -= item.quantity;
-        totalAmount += product.price * item.quantity;
-        purchasedProducts.push(item);
-        return false;
-      } else {
-        return true;
-      }
-    });
-
-    if (purchasedProducts.length == 0) {
-      res.status(400).json({ msg: "No se pudo completar ninguna compra!" });
+    console.log("UNPROCESSED: " + unprocessedProducts + "dawmda")
+    
+    if (unprocessedProducts.length > 0) {
+      return res.status(400).json({ msg: "No se pudo completar la compra!" });
     }
 
     await Promise.all(
       purchasedProducts.map(async (item) => {
-        const product = await ProductModel.findById(item.product._id);
+        const result = await ProductService.getProductById(item.product._id);
+        const product = result.product
         product.stock -= item.quantity;
         await product.save();
       })
     );
-    const newTicket = await Ticket.create({
+
+    const newTicket = await TicketModel.create({
       code: Math.random().toString(36).substring(2, 10),
       amount: totalAmount,
-      purchaser: req.user.email,
+      purchaser: "NASHE",
     });
+
     res.status(200).json({
       msg: "Compra finalizada",
       purchasedProducts,
-      unprocessedProducts,
       ticket: newTicket,
     });
-  } catch (e) {
-    res.status(500).json({ error: e });
+
+  } catch (error) {
+    return res.status(500).json({ error });
   }
-};
+}
+

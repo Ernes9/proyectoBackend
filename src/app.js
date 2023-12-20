@@ -4,7 +4,7 @@ import productsApiRouter from "./routes/products.router.js";
 import productsRouter from "./routes/products.views.js";
 import cartApiRouter from "./routes/carts.router.js";
 import cartRouter from "./routes/carts.views.js";
-import realTimeProductsRouter from "./routes/realTimeProducts.js";
+import realTimeProductsRouter from "./routes/realTimeProducts.view.js";
 import sessionRouter from "./routes/user.router.js";
 import { Server as HTTPServer } from "http";
 import { Server as SocketServer } from "socket.io";
@@ -30,7 +30,6 @@ import compression from "express-compression";
 
 import swaggerJSDoc from "swagger-jsdoc";
 import { serve, setup } from "swagger-ui-express";
-import config from "./utils/swagger.js";
 
 // DIRNAME
 // Lo tuve que poner en el app, porque si no me daba error
@@ -43,7 +42,22 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const conn = await mongoose.connect(ENV_CONFIG.MONGO_URI);
 export const messageManager = new messagesManagerDB();
 
-const specs = swaggerJSDoc(config);
+const swaggerConfig = {
+definition: {
+  openapi: "3.0.1",
+  info: {
+    title: "ECOMMERCE API",
+    description: "Tienda de productos",
+  },
+},
+apis: [
+  __dirname + "/docs/carts.docs.yaml",
+  __dirname + "/docs/products.docs.yaml",
+  __dirname + "/docs/user.docs.yaml"
+],
+};
+
+const specs = swaggerJSDoc(swaggerConfig);
 
 const productDAO = new ProductDAO();
 
@@ -91,6 +105,9 @@ app.use(
   })
 );
 
+
+
+
 app.use("/api/docs", serve, setup(specs));
 app.use("/api/productos", productsApiRouter);
 app.use("/api/cart", cartApiRouter);
@@ -121,8 +138,41 @@ if (cluster.isPrimary) {
 
 io.on("connection", async (socket) => {
   console.log("Socket conectado!");
-  const productos = await productDAO.find();
+  const productos = await productDAO.findAll();
   socket.emit("renderProductos", productos);
+
+  socket.on('new_product', async (data) => {
+    await productDAO.create(data)    
+    socket.emit('renderProductos', await productDAO.findAll())     
+  })
+
+  socket.on('mod_product', async (data) => {   
+    const userInfo = {
+      email: data.userEmail,
+      role: data.userRole,
+    };        
+    if (userInfo.role == 'admin' || userInfo.role == 'premium'){
+      await productDAO.update(data.id,data)
+      socket.emit('renderProductos', await productDAO.findAll())
+    }else{
+      return console.error({ error: 'No puedes modificar este producto' })
+    }
+  })
+
+  socket.on('delete_product',async (data) => {
+    console.log(data.pid)
+      const prod = await productDAO.findById(data.pid)
+      const userInfo = {
+        email: data.userEmail,
+        role: data.userRole,
+      };
+      if (userInfo.role == 'admin' || userInfo.role == 'premium'){
+        await productDAO.delete(data.pid)
+        socket.emit('renderProductos', await productDAO.findAll())
+      }else{
+        return console.error({ error: 'No puedes eliminar este producto' })
+      }
+  })
 
   const messages = await messageManager.getMessages();
   socket.emit("historial", messages);

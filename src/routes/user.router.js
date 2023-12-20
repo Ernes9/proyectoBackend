@@ -6,6 +6,9 @@ import passport from "passport";
 import { getUserByEmail, loginUser, registerUser } from "../services/users.service.js";
 import UserDAO from "../dao/mongo/user.dao.js";
 import transport from "../utils/mailing.js";
+import bcrypt from "bcrypt"
+import UserModel from "../schemas/user.schema.js";
+
 
 const userDao = new UserDAO()
 
@@ -22,7 +25,6 @@ sessionRouter.post("/login", async (req, res) => {
       await loginUser(email, password) ||
       email == "adminCoder@coder.com";
     if (!user) res.status(401).json({ message: "Credenciales inválidas." });
-    console.log("cookie:", res.cookie)
     const userSession = {
       _id: user._id,
       first_name: user.first_name,
@@ -31,6 +33,7 @@ sessionRouter.post("/login", async (req, res) => {
       role: user.role,
     };
     req.session.user = userSession;
+    req.session.role = userSession.role;
     const token = generateToken({ sub: user._id, user: { email } });
     res.cookie("accessToken", token, {
       maxAge: 24 * 60 * 60 * 1000,
@@ -104,7 +107,7 @@ sessionRouter.post("/recoverPassword", async (req,res) =>{
       to: email,
       subject: 'Reset your password',
       html: `<h1> Reset your password</h1>
-        <hr>Debes resetear tu password haciendo click en el siguiente <a href="http://localhost:8080/sessions/resetPassword/:${email}" target="_blank">LINK</a>
+        <hr>Debes resetear tu password haciendo click en el siguiente <a href="http://localhost:8080/sessions/resetpassword/:${email}" target="_blank">LINK</a>
         <hr>
         Saludos cordiales,<br>
         <b>The Coder e-commerce API Backend</b>`
@@ -130,18 +133,69 @@ sessionRouter.post('/resetpassword/:email', async (req, res) => {
   try {
       const email = req.params.email
       const user = await userDao.findByEmail(email)
-      const newPassword = req.body.newPassword;
+      console.log(user)
+      let newPassword = req.body.newPassword;
       const passwordsMatch = await bcrypt.compareSync(newPassword, user.password);
       if (passwordsMatch) {
-          return res.json({ status: 'error', message: 'No puedes usar la misma contraseña' });
+        return res.status(401).json({ status: 'error', message: 'No puedes usar la misma contraseña' });
       } 
-      await userDao.findByIdAndUpdate(user._id, { password: createHash(newPassword) })
-      res.render("Contraseña creada exitosamente!")
+      const salt = await bcrypt.genSalt(10);
+      newPassword = await bcrypt.hash(newPassword, salt);
+      await userDao.findByIdAndUpdate(user._id, { password: newPassword })
+      res.status(200).send("Contraseña creada exitosamente!")
   } catch (err) {
-      res.json({
+      console.error(err)
+      res.status(500).json({
           status: 'error',
           message: 'No se ha podido crear la nueva contraseña'
       })
+  }
+})
+
+sessionRouter.get("/premium/:id", passport.authenticate("jwt", { session: false }), async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await userDao.findById(id)
+    if (user.role == "premium") {
+      return res.status(401).render("role_changed", {message: "El usuario ya tiene el rol Premium"})
+    }
+    user.role = "premium"
+    await user.save()
+    return res.status(200).render("role_changed", {message: "El rol del usuario ha sido cambiado a Premium"})
+  } catch (error) {
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+})
+
+
+// Acá podría ponerlo para que solo se ejecute en entorno de DEVELOPMENT
+sessionRouter.delete("/test/:id", async (req, res) => {
+  // if (process.env.NODE_ENV === "production") {
+  //   res.status(401).send("Acceso denegado");
+  //   return;
+  // }
+  const { id } = req.params;
+  try {
+    const usuarioEliminado = await UserModel.findByIdAndDelete(id)
+    res.status(200).json({
+      message: "Usuario eliminado con exito",
+      usuario: usuarioEliminado
+    })
+  } catch (error) {
+    res.status(500).json({error: error})
+  }
+})
+
+sessionRouter.get("/test/user/:username", async (req, res) => {
+  const { username } = req.params;
+  try {
+    const usuario = await UserModel.findOne({username: username})
+    res.status(200).json({
+      message: "Usuario encontrado!",
+      usuario
+    })
+  } catch (error) {
+    
   }
 })
 

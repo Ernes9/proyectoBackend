@@ -94,7 +94,9 @@ function carritoEntrar() {
 
 carrito.addEventListener("click", carritoEntrar)
 
-cerrarSesion.addEventListener("click", localStorage.removeItem("cartId"))
+cerrarSesion.addEventListener("click", () => {
+    localStorage.removeItem("cartId")
+})
 
 botonesAgregar.forEach(boton => {
     boton.addEventListener("click", agregarAlCarrito);

@@ -20,3 +20,6 @@ const ticketSchema = new mongoose.Schema({
         require: true
     }
 })
+
+const TicketModel = mongoose.model("ticket", ticketSchema)
+export default TicketModel;
