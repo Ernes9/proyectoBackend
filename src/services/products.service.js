@@ -1,6 +1,6 @@
 import ProductDAO from "../dao/mongo/product.dao.js"
 import EErrors from "../utils/EError.js";
-import CustomError from "../utils/customError.js";
+import CustomError from "../utils/CustomError.js";
 import { generateProductErrorInfo } from "../utils/productsError.js";
 
 const productDAO = new ProductDAO();
